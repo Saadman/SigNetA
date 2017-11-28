@@ -13,8 +13,7 @@ topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE
   library(DLBCL)
   data(interactome)
   library(networkD3)
-  library(STRINGdb)
-  library(CLEAN.Rn)
+
   
   
   if(!is.null(File))
@@ -27,7 +26,7 @@ topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE
   }
   else{
     File<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
-   View(File)
+
   }
   
   sortedFile<-sortNetwork(File)
@@ -53,8 +52,7 @@ topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE
     # subnet <- subNetwork(a, ppiGW.copy,neighbors = "none")
      subnet <- subNetwork(logic$GeneID, ppiGW.copy,neighbors = "none")
 
-     print("This is subnet:")
-    print(subnet)
+    
   }
 
 if(proteinN=="1"){
@@ -102,7 +100,7 @@ if(proteinN=="1"){
     visLay<-"layout_with_graphopt"
   }
   
-  dev.off();
+  ###dev.off();
   
   if(proteinN=="2"){
   module<-igraph.to.graphNEL(colorNet$n) #STRING
@@ -161,8 +159,7 @@ if(proteinN=="1"){
  
   
   source<-unlist(lapply(1:length(ltn),function(x) rep(id[x],ltn[x])))
-  print("this is the source")
-  print(source)
+
   target<-unlist(lapply(edgeL(module), function(x) id[unlist(x)]))
   
   vect<-c()
@@ -175,21 +172,21 @@ if(proteinN=="1"){
   edgeData <- data.frame(source, target, stringsAsFactors=FALSE)
   
  
-  network <- createCytoscapeJsNetwork(nodeData, edgeData)
-
-  for(i in 1:length(target)){
+#   network <- createCytoscapeJsNetwork(nodeData, edgeData)
+# 
+#   for(i in 1:length(target)){
+#     
+#     network$edges[[i]]$data$edgeTargetShape="none"  #making undirected graphss
+#     
+#   }
+#   for(i in 1:length(target)){
+#     for(j in i:length(target)){
+#       if(network$edges[[i]]$data$source == network$edges[[j]]$data$target)
+#         network$edges[[j]]$data$target= "none"
+#       
+#     }
     
-    network$edges[[i]]$data$edgeTargetShape="none"  #making undirected graphss
-    
-  }
-  for(i in 1:length(target)){
-    for(j in i:length(target)){
-      if(network$edges[[i]]$data$source == network$edges[[j]]$data$target)
-        network$edges[[j]]$data$target= "none"
-      
-    }
-    
-  } #to remove doubly linked edges 
+  #} #to remove doubly linked edges 
  
   #IMPORTANT INFO:
   #resultant  module  visualized  in  Cytoscape.    Signicantly  upregu-
@@ -216,7 +213,7 @@ if(proteinN=="1"){
   }
   
   
-  print(label)
+ 
   for(i in 1:length(label)){
     nodeVisData[i,3]<-colorNet$c[i];
     nodeVisData[i,6]<-paste0("<p><b>Gene name:</b>",statNet$name[i],"</p><br><p><b>Gene ID:</b>",statNet$geneID[i],"</p><br><p><b>Differential Expression:</b>",statNet$Diff_Exp[i],"</p><p><b>NCBI link:</b><a href='",statNet$href[i],"' target='_blank'>",statNet$href[i],"</a></p>")
@@ -232,18 +229,18 @@ if(proteinN=="1"){
     
   }
  
-  print(nodeVisData)
+ 
 
   nodeVisData<-data.frame(nodeVisData[1:7], apply(nodeVisData["size"],2, normalize) )
   for( l in 1:length(nodeVisData$size)){
-    print(nodeVisData$size[l])
+    
    if(nodeVisData$size[l]<1)
    {
      nodeVisData$size[l]<-1
    }
   }
   
-  print(nodeVisData)
+  
   
  
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]])))
@@ -281,7 +278,7 @@ if(proteinN=="1"){
   
   ##GO nodes add start ###
   if(!is.null(enrich)){
-    print(length(as.character(enrich$idSel)))
+   
  
        
       
@@ -290,11 +287,11 @@ if(proteinN=="1"){
         res[i]<-as.character(enrich$idSel[i])
       }
       
-      print(res)
+    
      
      
       addGO<-genesInEnrichedCategories(res, nodeData$geneID, funcCategories = "GO", species = "Hs")
-      View(addGO)
+     
       from<-c()
       to<-c()
       nodeIdData<-c()
@@ -307,15 +304,15 @@ if(proteinN=="1"){
           if(addGO[i,j]==TRUE){
            
             subId<-substring(names(addGO[j]),2)
-            print("this is subId:")
-            print(subId)
+            
+            
             nodeIdData<-append(nodeIdData,subId)
        
             
           }
           
         }
-        View(nodeIdData)
+       
         genein<-geneInfoFromPortals(geneList=nodeIdData,symbol=T,names=F) #interactome
         geneLab<-apply(genein,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep="")) #interactome
         GOnodeName<-sub(" *\\(.*", "", geneLab)
@@ -323,15 +320,14 @@ if(proteinN=="1"){
           from<-append(from,addGO[[i,1]])
           to<-append(to,GOnodeName[k])
         }
-       print(from)
-       print(to)
+      
        nodeIdData<-NULL
         
       }
       GOdataframe<-data.frame(from,to)
-      print("level 1")
+     
       forGo<-nrow(edgeVisData)
-      print("level 2")
+      
     
   edgeVisData<-data.frame(from=edgeVisData$from,to=edgeVisData$to)
   
@@ -339,7 +335,7 @@ if(proteinN=="1"){
 
      
   
-  View(edgeVisData)
+ 
       
       l<-nrow(nodeVisData)
       
@@ -354,20 +350,19 @@ if(proteinN=="1"){
         nodeVisData[l+i,8]<-20
         
       }
-      print("this is for GO:see tab")
-      View(nodeVisData)
+      
       
     #}
   }
-  print(edgeVisData)
+  
   
   ##GO nodes add stop##
  visObj<- visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
- print(visObj)
+ 
  visObj<-visExport(visObj,type ="png", name="network",float="right")
 
 if(phy){
-  print("physics active")
+  #print("physics active")
 }
  else{
    visObj<-visIgraphLayout(visObj,layout=visLay)
