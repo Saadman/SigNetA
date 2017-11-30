@@ -21,20 +21,19 @@ if(!is.null(File))
 }
 else{
   File<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
-  View(File)
+
 }
 #fileSNP<-read.csv(file="ExtraFiles/dmGWAS/diabetesSNP.csv",sep=",")
 #gene.map=SNP2Gene.match(assoc.file="ExtraFiles/dmGWAS/diabetesSNP.csv",snp2gene.file="ExtraFiles/dmGWAS/GenomeWideSNP_5.na30.annot.AffyID", boundary=20)
 
 ##dataFile<- read.csv(file="ExtraFiles/dmGWAS/vorinostat.xls",sep="\t")
 #GeneNames and Pvals
-View(File)
+
 gene2weight<-data.frame(gene=File$GeneNames,weight=File$Pvals)
 sorted<-gene2weight[order(gene2weight$weight),] 
 
 topgenes<-head(sorted,201)
-View(gene2weight)
-View(topgenes)
+
 gene2weight<-topgenes
 
 
@@ -44,7 +43,7 @@ i_interactome<-igraph.from.graphNEL(interactome)
 ppinetwork<-as.data.frame(get.edgelist(i_interactome))
 ppinetwork$V1<-sub(" *\\(.*", "", ppinetwork$V1)
 ppinetwork$V2<-sub(" *\\(.*", "", ppinetwork$V2)
-print(head(ppinetwork))
+
 #p_val<-c()
 #for(i in 1:length(gene2weight$weight))
 # { 
@@ -112,7 +111,7 @@ for(i in 1:length(name)){
   # nodeData[i,8]<-(l[i,1]+1)*100
   # nodeData[i,9]<-(l[i,2] +1)*100
 }
-# print(nodeData)
+
 statNet<<-nodeData
 
 

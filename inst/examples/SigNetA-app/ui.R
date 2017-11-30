@@ -1,4 +1,4 @@
-#library(rcytoscapejs2)
+
 library(shiny)
 library(shinyjs)
 library(DT)

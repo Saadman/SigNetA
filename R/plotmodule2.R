@@ -7,7 +7,7 @@ plotmodule2<-function (network, layout = layout.fruchterman.reingold, labels = N
   require(igraph)
   if (is(network, "graphNEL")) {
     network <- igraph.from.graphNEL(network) #difference between graphs?
-    print(typeof(network))
+  
   }
   if (is.null(V(network)$name)) {
     V(network)$name <- as.character(V(network))
@@ -32,13 +32,13 @@ plotmodule2<-function (network, layout = layout.fruchterman.reingold, labels = N
   }
   if (!is.null(diff.expr) && !is.null(names(diff.expr))) {
     #coloring <- .node.color(network, diff.expr)
-    print("First Coloring")
+    
     require(gplots)
     cols = greenred(23)
     bins = c(-10,seq(-.25,.25,0.025),10)
     V(network)$color = cols[cut(diff.expr,breaks=bins)]
     coloring<-V(network)$color
-    print(coloring)
+
   }
   else {
     coloring <- "SkyBlue2"
@@ -47,7 +47,7 @@ plotmodule2<-function (network, layout = layout.fruchterman.reingold, labels = N
     diff.exprs = V(network)$diff.expr
     names(diff.exprs) <- V(network)$name
     #coloring <- .node.color(network, diff.exprs)
-    print("Second Coloring")
+   
     ###mario edits
     require(gplots)
     cols = greenred(53)

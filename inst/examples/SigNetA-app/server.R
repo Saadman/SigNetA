@@ -1,4 +1,4 @@
-library(rcytoscapejs2)
+
 library(DT)
 library(shiny)
 library(shinyjs)
@@ -22,7 +22,7 @@ shinyServer(function(input,output,session){
  observeEvent(input$load_example,{
     
     exFile<<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
-   View(exFile)
+  
    shinyjs::enable("downloadNetworkImage")
    shinyjs::show("saveImage")
    shinyjs::enable("downloadEnrich")
@@ -98,7 +98,7 @@ shinyServer(function(input,output,session){
   output$enrichmentAnalysis<-DT::renderDataTable({
     if (is.null(input$file1) || input$file1 == "" ) {
       if(!is.null(exFile)){
-        print("enrich1")
+        
         enrichmentChange()
         
       }
@@ -117,7 +117,7 @@ shinyServer(function(input,output,session){
       #}
      # else{
        # output$input_error2=renderText("")
-      print("enrich2")
+     
         enrichmentChange()
         
        #this is where enrichment functionality was
@@ -150,7 +150,7 @@ shinyServer(function(input,output,session){
       
       geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
       geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))
-      print("this is statnet")
+     
       if(input$PPI=="2"){
         subnetGenes<-statNet$id
       }
@@ -158,12 +158,10 @@ shinyServer(function(input,output,session){
       subnetGenes<-gsub("[\\(\\)]", "", regmatches( statNet$id, gregexpr("\\(.*?\\)",  statNet$id)))
       }
       allGenes<-gsub("[\\(\\)]", "", regmatches(geneLabels, gregexpr("\\(.*?\\)", geneLabels)))
-    print("these are subnet")
-    print(subnetGenes)
-    print(typeof(subnetGenes))
-    print("these are all genes")
-    print(allGenes)
-    print(typeof(allGenes))
+   
+
+   
+   
       result<-geneListEnrichment(subnetGenes, allGenes, functionalCategories = "GO", species = "Hs", minGenesInCategory=10, maxGenesInCategory=1000, inBkg=TRUE, sigFDR = 0.1, verbose=TRUE)
     
       
@@ -225,16 +223,16 @@ shinyServer(function(input,output,session){
   
  # tableChange<-reactive({
   tableChange<-function(){ 
-   print("table in")
+
    # if(input$algorithm=="1" ){
-      print("table is changing")
+    
       statNet<-statNet[-c(1,3,4)]
       
       colnames(statNet)<-c("geneName","NCBI Information","geneID","Diff_Exp")
       statNet<-statNet[c("geneName","geneID","Diff_Exp","NCBI Information")]
       
-      print("this is statnet")
-      View(statNet)
+      
+     
       statNet
    # }
   }
@@ -244,7 +242,7 @@ shinyServer(function(input,output,session){
     
     if (is.null(input$file1) || input$file1 == "" ) {
       if(!is.null(exFile) || is.null(input$PPI)){
-        print("table1")
+        
         tableChange()
         
       }
@@ -256,7 +254,7 @@ shinyServer(function(input,output,session){
     else if(!is.null(input$file) || !is.null(input$PPI)){
       
       
-      print("table2")
+      
       tableChange()
       
     }
@@ -271,7 +269,7 @@ shinyServer(function(input,output,session){
     idSel<<-as.character(tableEnrichment[input$enrichmentAnalysis_rows_selected,1])
     nameSel<<-as.character(tableEnrichment[input$enrichmentAnalysis_rows_selected,2])
     en<<-data.frame(idSel,nameSel)
-    View(en)
+    
   
   if(nrow(en)>0){
     
@@ -285,7 +283,7 @@ shinyServer(function(input,output,session){
     
   
     output$plot<-renderVisNetwork({
-      print("in plotting output")
+    
       ret<-topHundredNetwork(input$file1$datapath,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=en)
       
     })
@@ -447,8 +445,8 @@ shinyServer(function(input,output,session){
       
    
       visOptions(highlightNearest = TRUE,nodesIdSelection=list(enabled=TRUE,values=input$nodeSelect))
-    print(as.list(input$nodeSelect))
-    print(input$nodeSelect)
+  
+   
     
     
   })
@@ -472,7 +470,7 @@ shinyServer(function(input,output,session){
     visNetworkProxy("plot") %>%
      
      visPhysics(solver=input$solve,barnesHut=list(gravitationalConstant=input$grav,centralGravity=input$centralGrav),repulsion=list(centralGravity=input$centralGrav),forceAtlas2Based=list(gravitationalConstant=input$grav,centralGravity=input$centralGrav))
-   print(input$grav)
+   
    
       
   })
@@ -529,8 +527,8 @@ shinyServer(function(input,output,session){
   observeEvent(input$choices,{
     sigFileName<-paste("files/",input$choices,sep = "")
     sigFile<<-read.csv(file=sigFileName,sep='\t')
-    print(typeof(sigFile))
-    View(sigFile)
+   
+    
     
     
   })
@@ -555,7 +553,7 @@ listfiles <- function(){
   
   l = list()
   for(i in 1:length(files)){
-    #print(files[i])
+    
     l[[i]]=strsplit(files[i],"/")
 
   }

@@ -142,20 +142,20 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1){
   
   edgeData <- data.frame(source, target, stringsAsFactors=FALSE)
   
-  network <- createCytoscapeJsNetwork(nodeData, edgeData)
-  for(i in 1:length(target)){
-    
-    network$edges[[i]]$data$edgeTargetShape="none"  #making undirected graphss
-    
-  }
-  for(i in 1:length(target)){
-    for(j in i:length(target)){
-      if(network$edges[[i]]$data$source == network$edges[[j]]$data$target)
-        network$edges[[j]]$data$target= "none"
-      
-    }
-    
-  }
+#   network <- createCytoscapeJsNetwork(nodeData, edgeData)
+#   for(i in 1:length(target)){
+#     
+#     network$edges[[i]]$data$edgeTargetShape="none"  #making undirected graphss
+#     
+#   }
+#   for(i in 1:length(target)){
+#     for(j in i:length(target)){
+#       if(network$edges[[i]]$data$source == network$edges[[j]]$data$target)
+#         network$edges[[j]]$data$target= "none"
+#       
+#     }
+#     
+#   }
   ##VisNetwork###########
   
   nodeVisData$color.background<-rep("blue",nrow(nodeData))
@@ -173,7 +173,7 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1){
   }
   
   
-  print(label)
+
   for(i in 1:length(label)){
     nodeVisData[i,3]<-colorNet$c[i];
     nodeVisData[i,6]<-paste0("<p><b>Gene name:</b>",statNet$name[i],"</p><br><p><b>Gene ID:</b>",statNet$geneID[i],"</p><br><p><b>Differential Expression:</b>",statNet$Diff_Exp[i],"</p><p><b>NCBI link:</b><a href='",statNet$href[i],"' target='_blank'>",statNet$href[i],"</a></p>")
@@ -189,18 +189,18 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1){
     
   }
   
-  print(nodeVisData)
+
   
   nodeVisData<-data.frame(nodeVisData[1:7], apply(nodeVisData["size"],2, normalize) )
   for( l in 1:length(nodeVisData$size)){
-    print(nodeVisData$size[l])
+    
     if(nodeVisData$size[l]<1)
     {
       nodeVisData$size[l]<-1
     }
   }
   
-  print(nodeVisData)
+ 
   
   
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]])))
@@ -223,11 +223,11 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1){
   edgeVisData = edgeVisData[!duplicated(edgeVisData),]
   
   visObj<- visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
-  print(visObj)
+ 
   visObj<-visExport(visObj,type ="png", name="network",float="right")
   
   if(phy){
-    print("physics active")
+    
   }
   else{
     visObj<-visIgraphLayout(visObj,layout=visLay)

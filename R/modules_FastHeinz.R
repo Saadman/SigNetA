@@ -8,7 +8,7 @@ modules_FastHeinz=function(subnet,data_vector)
     positive_nodes=seq(nsize,nsize*3,5)
      
     for (j in 1:length(positive_nodes)) {
-      print(j)
+      
       idx=positive_nodes[j]+1
       gene_name=df$name[df$rank_gene_scores==idx]   #all ranks are unique
       scores_normalized=gene_scores-df$gene_scores[df$name==gene_name]

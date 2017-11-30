@@ -82,7 +82,7 @@ D3layout<-function(File=NULL,upload3=NULL){
 
  simpleNetwork(networkData)
   dev.off()
-  print(simpleNetwork(networkData))
+
   
   
 }

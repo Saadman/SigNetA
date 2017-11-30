@@ -52,7 +52,7 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
   ###Identify module using FastHeinz algorithm, nsize is fixed to 30 nodes
   
  
-  print(pval)
+ 
   names(pval)<-logic$GeneID
   
   #module=modules_FastHeinz(subnet=ppi, data_vector=lincscp_1)
@@ -86,7 +86,7 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
   # source("rashidplotmodule.R")
   pdf("wor.pdf")
   colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
-  print(colorNet$n)
+
   module<-igraph.to.graphNEL(colorNet$n) #STRING
   dev.off()
   #library(rcytoscapejs)
@@ -114,7 +114,7 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
     visLay<-"layout_with_graphopt"
   }
   
-  print("works one")
+ 
   id <- nodes(module)
   name <- id
   label<-id #visNetwork and interactome
@@ -123,8 +123,8 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
   label<-apply(geninfo2,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))#STRING
   nodeData <- data.frame(id, name, stringsAsFactors=FALSE)
   nodeVisData<-data.frame(id,label,stringsAsFactors = FALSE) #visNetwork
-  print(nodeVisData)
-  print("works two")
+  
+ 
   nodeData$color<- rep("#00FF0F",nrow(nodeData))  #changed color of nodes
   nodeData$shape <- "none"  #default shape
   nodeData$href <- paste0("http://www.ncbi.nlm.nih.gov/gene/",gsub("[\\(\\)]", "", regmatches(nodeData$name, gregexpr("\\(.*?\\)", nodeData$name))))
@@ -135,10 +135,9 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
   
   nodeData$Diff_Exp="none"
   nodeData$score="none"
-  print(nodeData)
+ 
   
-  print("works three")
-  print(colorNet)
+
   for(i in 1:length(name)){
     nodeData[i,3]<-colorNet$c[i];
     nodeData[i,7]<-colorNet$d[i];
@@ -158,7 +157,7 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
     
   }
   statNet<<-nodeData
-  print("works four")
+  
   
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]])))
   source<-unlist(lapply(1:length(ltn),function(x) rep(id[x],ltn[x])))
@@ -171,22 +170,22 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
   
   
   edgeData <- data.frame(source, target, stringsAsFactors=FALSE)
-  print("Works five")
+ 
   
-  network <- createCytoscapeJsNetwork(nodeData, edgeData)
-  for(i in 1:length(target)){
-    
-    network$edges[[i]]$data$edgeTargetShape="none"  #making undirected graphss
-    
-  }
-  for(i in 1:length(target)){
-    for(j in i:length(target)){
-      if(network$edges[[i]]$data$source == network$edges[[j]]$data$target)
-        network$edges[[j]]$data$target= "none"
-      
-    }
-    
-  }
+#   network <- createCytoscapeJsNetwork(nodeData, edgeData)
+#   for(i in 1:length(target)){
+#     
+#     network$edges[[i]]$data$edgeTargetShape="none"  #making undirected graphss
+#     
+#   }
+#   for(i in 1:length(target)){
+#     for(j in i:length(target)){
+#       if(network$edges[[i]]$data$source == network$edges[[j]]$data$target)
+#         network$edges[[j]]$data$target= "none"
+#       
+#     }
+#     
+#   }
   ##VisNetwork###########
   
   nodeVisData$color.background<-rep("blue",nrow(nodeData))
@@ -203,8 +202,7 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
     return (((x - min(x)) / (max(x) - min(x)))*50)
   }
   
-  print("works six")
-  print(label)
+
   for(i in 1:length(label)){
     nodeVisData[i,3]<-colorNet$c[i];
     nodeVisData[i,6]<-paste0("<p><b>Gene name:</b>",statNet$name[i],"</p><br><p><b>Gene ID:</b>",statNet$geneID[i],"</p><br><p><b>Differential Expression:</b>",statNet$Diff_Exp[i],"</p><p><b>NCBI link:</b><a href='",statNet$href[i],"' target='_blank'>",statNet$href[i],"</a></p>")
@@ -220,18 +218,17 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
     
   }
   
-  print(nodeVisData)
-  print("works seven")
+
   nodeVisData<-data.frame(nodeVisData[1:7], apply(nodeVisData["size"],2, normalize) )
   for( l in 1:length(nodeVisData$size)){
-    print(nodeVisData$size[l])
+    
     if(nodeVisData$size[l]<1)
     {
       nodeVisData$size[l]<-1
     }
   }
   
-  print(nodeVisData)
+ 
   
   
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]])))
@@ -247,7 +244,7 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
   
   
   edgeVisData <- data.frame(from=sourceVis, to=targetVis, stringsAsFactors=FALSE)
-  print("works eight")
+
   for (i in 1:nrow(edgeVisData))
   {
     edgeVisData[i, ] = sort(edgeVisData[i, ])
@@ -255,11 +252,11 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
   edgeVisData = edgeVisData[!duplicated(edgeVisData),]
   
   visObj<- visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
-  print(visObj)
+
   visObj<-visExport(visObj,type ="png", name="network",float="right")
   
   if(phy){
-    print("physics active")
+   # print("physics active")
   }
   else{
     visObj<-visIgraphLayout(visObj,layout=visLay)

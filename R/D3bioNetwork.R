@@ -114,6 +114,6 @@ D3bioNetwork<-function(File=NULL,upload4=NULL){
   
   simpleNetwork(networkData)
   dev.off()
-  print(simpleNetwork(networkData))
+  
   
 } #end of bionet algorithm
