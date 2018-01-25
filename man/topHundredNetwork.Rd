@@ -5,7 +5,7 @@
 \title{Top Hundred Network Function}
 \usage{
 topHundredNetwork(File = NULL, upload1 = NULL, layOut = 1, proteinN = 2,
-  phy = FALSE, enrich = NULL)
+  phy = FALSE, enrich = NULL, package = FALSE)
 }
 \arguments{
 \item{File}{? Defaults to NULL.}

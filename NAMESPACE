@@ -2,6 +2,7 @@
 
 export(D3bioNetwork)
 export(D3layout)
+export(RWR)
 export(SigNetA)
 export(SigNetAOutput)
 export(bioNetwork)

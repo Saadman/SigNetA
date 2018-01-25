@@ -1,23 +1,24 @@
 
-#' BioNetWork Function
+#' RWR Function
 #'
-#' This function allows you to analyze genes from a signature using the bionet algorithm from the package "bionet" and uses interactome dataset
+#' This function allows you to analyze genes from a signature using the random walk with restart algorithm and uses STRING dataset
 #' @param File ? Defaults to NULL.
-#' @keywords bioNetwork
+#' @keywords RWR
 #' @export
 #' @examples
-#' bioNetwork() will analyze network for vorinostat signature from ilincs
-bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
+#' RWR() will analyze network for vorinostat signature from ilincs
+RWR<-function(File=NULL,upload5=NULL,phy=FALSE,layOut=1,package=FALSE){
+  
   library(igraph)
   library(BioNet)
   library(DLBCL)
   data(interactome)
-
+  
   if(!is.null(File))
   {  
-    if(is.null(upload2)){
-    logic<-File
-      }
+    if(is.null(upload5)){
+      logic<-File
+    }
     else{
       logic<-read.csv(file=File,sep='\t')
     }
@@ -32,25 +33,43 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
   geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))
   pval<-as.numeric(logic$Pvals)
-  
+  pval<- -log10(pval)
   names(pval)<-geneLabels
   
   logFC<-as.numeric(logic$coefficients)
   names(logFC)<-geneLabels
   
   
-  subnet <- subNetwork(geneLabels, interactome)
-  subnet <- rmSelfLoops(subnet)
+  ##subnet <- subNetwork(geneLabels, interactome)
+  ## subnet <- rmSelfLoops(subnet)
+  
+  ####Modified function used#######
+  load(system.file("extdata", "weightedGraphStringPPI_10.rda", package = "SigNetA"))
+  load(system.file("extdata", "lincscp_1.rda", package = "SigNetA"))
+  ppiGW.copy <- delete.edges(ppiGW, which(E(ppiGW)$weight <=0.7))
+  ppi <- rmSelfLoops(ppiGW.copy)
+  ppi=decompose.graph(ppi)[[1]]
+  
+  ###Identify module using FastHeinz algorithm, nsize is fixed to 30 nodes
   
   
-  system.time( fb <- fitBumModel(pval, plot = FALSE))
+  
+  names(pval)<-logic$GeneID
+  
+  #module=modules_FastHeinz(subnet=ppi, data_vector=lincscp_1)
+  module=modules_RWR_TopScores(subnet=ppi, data_vector=pval, damping_factor=0.8, nseeds=10)
+  #module=modules_FastHeinz(subnet=ppi, data_vector=pval)
+  #module=
+  ##modified ends##
+  
+  ##system.time( fb <- fitBumModel(pval, plot = FALSE))
   #err2<<-try(scoreNodes(subnet, fb, fdr = 0.1),silent=TRUE)
   #if(class(err2)=="try-error"){
   # output$input_error=renderText("No significant subnetwork generated.Please upload another Signature.")
   # }
   #else{
   #output$input_error=renderText("")
-  system.time(scores <- scoreNodes(subnet, fb, fdr = 0.1))
+  ##system.time(scores <- scoreNodes(subnet, fb, fdr = 0.1))
   
   #err<<-try(runFastHeinz(subnet, scores),silent=TRUE)
   # if(class(err) == "try-error"){
@@ -64,11 +83,13 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   
   # else{
   #output$input_error=renderText("")
-  system.time(module <- runFastHeinz(subnet, scores))
+  ##system.time(module <- runFastHeinz(subnet, scores))
   
- # source("rashidplotmodule.R")
+  # source("rashidplotmodule.R")
   pdf("wor.pdf")
-  colorNet<-plotmodule2(module, scores = scores, diff.expr = logFC)
+  colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
+  
+  module<-igraph.to.graphNEL(colorNet$n) #STRING
   dev.off()
   #library(rcytoscapejs)
   ## IGRAPH LAYOUTS FOR RCYTOSCAPEJS2
@@ -99,8 +120,12 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   id <- nodes(module)
   name <- id
   label<-id #visNetwork and interactome
+  geninfo2<-geneInfoFromPortals(geneList=as.character(id),symbol=T,names=F) #STRING
+  name<-apply(geninfo2,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))#STRING
+  label<-apply(geninfo2,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))#STRING
   nodeData <- data.frame(id, name, stringsAsFactors=FALSE)
   nodeVisData<-data.frame(id,label,stringsAsFactors = FALSE) #visNetwork
+  
   
   nodeData$color<- rep("#00FF0F",nrow(nodeData))  #changed color of nodes
   nodeData$shape <- "none"  #default shape
@@ -109,14 +134,19 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   nodeNameEntrez<-nodeData$name
   nodeData$name<-sub(" *\\(.*", "", nodeData$name)
   
+  
   nodeData$Diff_Exp="none"
   nodeData$score="none"
+  
+  
+  
   for(i in 1:length(name)){
     nodeData[i,3]<-colorNet$c[i];
-    nodeData[i,7]<-colorNet$d[i]
+    nodeData[i,7]<-colorNet$d[i];
     nodeData[i,8]<-colorNet$sc[i]
     
   }
+  
   for(i in 1:length(name)){
     if(colorNet$s[i]=="csquare")
       #colorNet$s[i]<-"rectangle"
@@ -130,6 +160,7 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   }
   statNet<<-nodeData
   
+  
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]])))
   source<-unlist(lapply(1:length(ltn),function(x) rep(id[x],ltn[x])))
   target<-unlist(lapply(edgeL(module), function(x) id[unlist(x)]))
@@ -142,20 +173,21 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   
   edgeData <- data.frame(source, target, stringsAsFactors=FALSE)
   
-#   network <- createCytoscapeJsNetwork(nodeData, edgeData)
-#   for(i in 1:length(target)){
-#     
-#     network$edges[[i]]$data$edgeTargetShape="none"  #making undirected graphss
-#     
-#   }
-#   for(i in 1:length(target)){
-#     for(j in i:length(target)){
-#       if(network$edges[[i]]$data$source == network$edges[[j]]$data$target)
-#         network$edges[[j]]$data$target= "none"
-#       
-#     }
-#     
-#   }
+  
+  #   network <- createCytoscapeJsNetwork(nodeData, edgeData)
+  #   for(i in 1:length(target)){
+  #     
+  #     network$edges[[i]]$data$edgeTargetShape="none"  #making undirected graphss
+  #     
+  #   }
+  #   for(i in 1:length(target)){
+  #     for(j in i:length(target)){
+  #       if(network$edges[[i]]$data$source == network$edges[[j]]$data$target)
+  #         network$edges[[j]]$data$target= "none"
+  #       
+  #     }
+  #     
+  #   }
   ##VisNetwork###########
   
   nodeVisData$color.background<-rep("blue",nrow(nodeData))
@@ -173,7 +205,6 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   }
   
   
-
   for(i in 1:length(label)){
     nodeVisData[i,3]<-colorNet$c[i];
     nodeVisData[i,6]<-paste0("<p><b>Gene name:</b>",statNet$name[i],"</p><br><p><b>Gene ID:</b>",statNet$geneID[i],"</p><br><p><b>Differential Expression:</b>",statNet$Diff_Exp[i],"</p><p><b>NCBI link:</b><a href='",statNet$href[i],"' target='_blank'>",statNet$href[i],"</a></p>")
@@ -189,7 +220,6 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
     
   }
   
-
   
   nodeVisData<-data.frame(nodeVisData[1:7], apply(nodeVisData["size"],2, normalize) )
   for( l in 1:length(nodeVisData$size)){
@@ -200,7 +230,7 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
     }
   }
   
- 
+  
   
   
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]])))
@@ -216,6 +246,7 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   
   
   edgeVisData <- data.frame(from=sourceVis, to=targetVis, stringsAsFactors=FALSE)
+  
   for (i in 1:nrow(edgeVisData))
   {
     edgeVisData[i, ] = sort(edgeVisData[i, ])
@@ -223,11 +254,11 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   edgeVisData = edgeVisData[!duplicated(edgeVisData),]
   
   visObj<- visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
- 
+  
   visObj<-visExport(visObj,type ="png", name="network",float="right")
   
   if(phy){
-    
+    # print("physics active")
   }
   else{
     visObj<-visIgraphLayout(visObj,layout=visLay)
@@ -243,7 +274,7 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
     
     visObj<-visOptions(visObj,manipulation = TRUE)
   }
- 
+  
   #plotInput(network,network$nodes,network$edges)
   #rcytoscapejs2(network$nodes, network$edges,width=1500,height=1800, layout="spread", showPanzoom=TRUE)
   #}
@@ -252,4 +283,4 @@ bioNetwork<-function(File=NULL,upload2=NULL,phy=FALSE,layOut=1,package=FALSE){
   #}
   
   
-} #end of bionet algorithm
+}

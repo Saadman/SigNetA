@@ -4,7 +4,8 @@
 \alias{bioNetwork}
 \title{BioNetWork Function}
 \usage{
-bioNetwork(File = NULL, upload2 = NULL, phy = FALSE, layOut = 1)
+bioNetwork(File = NULL, upload2 = NULL, phy = FALSE, layOut = 1,
+  package = FALSE)
 }
 \arguments{
 \item{File}{? Defaults to NULL.}

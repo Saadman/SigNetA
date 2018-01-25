@@ -6,13 +6,14 @@
 #' @export
 #' @examples
 #' topHundredNetwork()  will analyze network for vorinostat signature from ilincs
-topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE,enrich=NULL){
+topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE,enrich=NULL,package=FALSE){
    
   library(igraph)
   library(BioNet)
   library(DLBCL)
   data(interactome)
   library(networkD3)
+  library(visNetwork)
 
   
   
@@ -230,8 +231,11 @@ if(proteinN=="1"){
   }
  
  
-
+ # print(nodeVisData["size"])
   nodeVisData<-data.frame(nodeVisData[1:7], apply(nodeVisData["size"],2, normalize) )
+  #print(nodeVisData["size"])
+  #nodeVisData<-data.frame(nodeVisData[1:7], abs(as.data.frame(scale(nodeVisData["size"])) ))
+  #print(nodeVisData["size"])
   for( l in 1:length(nodeVisData$size)){
     
    if(nodeVisData$size[l]<1)
@@ -367,12 +371,23 @@ if(phy){
  else{
    visObj<-visIgraphLayout(visObj,layout=visLay)
  }
-
+ if(package==TRUE)
+ {
+   visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
+  }
+else{
  visObj<-visInteraction(visObj,navigationButtons = TRUE)
 
 
  visObj<-visOptions(visObj,manipulation = TRUE)
-
+}
+ #print("works")
+ 
+ #if(package==TRUE)
+ #{
+ #  visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
+# }
+#print("not work")
 }
 
 

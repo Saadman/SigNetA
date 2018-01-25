@@ -6,7 +6,7 @@
 #' @export
 #' @examples
 #' dmGWAS()  will analyze network for genes in signature from ilincs using ideker et. al. 2002 algorithm
-dmGWAS<-function(File=NULL,upload3=NULL,layOut=1,proteinN=2,phy=FALSE,enrich=NULL){
+dmGWAS<-function(File=NULL,upload3=NULL,layOut=1,proteinN=2,phy=FALSE,enrich=NULL,package=FALSE){
 library(dmGWAS)
 library(DLBCL)
 library(visNetwork)
@@ -36,14 +36,14 @@ topgenes<-head(sorted,201)
 
 gene2weight<-topgenes
 
-
+print("stage 1 passed")
 
 i_interactome<-igraph.from.graphNEL(interactome)
 
 ppinetwork<-as.data.frame(get.edgelist(i_interactome))
 ppinetwork$V1<-sub(" *\\(.*", "", ppinetwork$V1)
 ppinetwork$V2<-sub(" *\\(.*", "", ppinetwork$V2)
-
+print(head(ppinetwork))
 #p_val<-c()
 #for(i in 1:length(gene2weight$weight))
 # { 
@@ -57,7 +57,7 @@ ppinetwork$V2<-sub(" *\\(.*", "", ppinetwork$V2)
 # gene2weight$weight[i]<-0.0000001
 # }
 #}
-
+print("stage 2 passed")
 res.list = dms(ppinetwork, gene2weight, d=2, r=0.1) #works for 300 genes and d=1
 
 ##error while running res.list with different parameters
@@ -65,7 +65,9 @@ res.list = dms(ppinetwork, gene2weight, d=2, r=0.1) #works for 300 genes and d=1
 ##200 genes error is -Error in identical.idx[[k]] : subscript out of bounds
 ##201 and above works
 ##
+print("stage 3 passed")
 selected = simpleChoose(res.list, top=100, plot=T) 
+print("stage 4 passed")
 
 #source("ExtraFiles/dmGWAS/plotmodule2.R")
 logFC<-as.numeric(File$coefficients)
@@ -182,7 +184,25 @@ for (i in 1:nrow(edgeVisData))
 edgeVisData = edgeVisData[!duplicated(edgeVisData),]
 visObj<- visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
 print(visObj)
+visObj<-visExport(visObj,type ="png", name="network",float="right")
 
+if(phy){
+  # print("physics active")
+}
+else{
+  visObj<-visIgraphLayout(visObj,layout=visLay)
+}
+
+if(package==TRUE)
+{
+  visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
+}
+else{
+  visObj<-visInteraction(visObj,navigationButtons = TRUE)
+  
+  
+  visObj<-visOptions(visObj,manipulation = TRUE)
+}
 
 
 }

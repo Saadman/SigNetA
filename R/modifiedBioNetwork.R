@@ -7,7 +7,7 @@
 #' @export
 #' @examples
 #' modifiedBioNetwork() will analyze network for vorinostat signature from ilincs
-modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
+modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1,package=FALSE){
   library(igraph)
   library(BioNet)
   library(DLBCL)
@@ -262,10 +262,16 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1){
     visObj<-visIgraphLayout(visObj,layout=visLay)
   }
   
-  visObj<-visInteraction(visObj,navigationButtons = TRUE)
-  
-  
-  visObj<-visOptions(visObj,manipulation = TRUE)
+  if(package==TRUE)
+  {
+    visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
+  }
+  else{
+    visObj<-visInteraction(visObj,navigationButtons = TRUE)
+    
+    
+    visObj<-visOptions(visObj,manipulation = TRUE)
+  }
   
   #plotInput(network,network$nodes,network$edges)
   #rcytoscapejs2(network$nodes, network$edges,width=1500,height=1800, layout="spread", showPanzoom=TRUE)

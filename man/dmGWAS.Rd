@@ -5,7 +5,7 @@
 \title{dmGWAS Function}
 \usage{
 dmGWAS(File = NULL, upload3 = NULL, layOut = 1, proteinN = 2,
-  phy = FALSE, enrich = NULL)
+  phy = FALSE, enrich = NULL, package = FALSE)
 }
 \arguments{
 \item{File}{? Defaults to NULL.}

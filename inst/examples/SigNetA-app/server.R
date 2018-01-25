@@ -84,7 +84,14 @@ shinyServer(function(input,output,session){
     
   })
  
-
+observe({
+  if(input$algorithm==3 || input$algorithm==4){
+    showModal(modalDialog(
+      title = "Important message",
+      "Please wait.This algorithm takes time to generate the subnetwork."
+    ))
+  }
+})
   
   output$clickedNode = renderPrint({
     input$clickedNode
@@ -94,7 +101,7 @@ shinyServer(function(input,output,session){
     input$connectedNodes
   })
   
-  
+  ##gdgsgds
   output$enrichmentAnalysis<-DT::renderDataTable({
     if (is.null(input$file1) || input$file1 == "" ) {
       if(!is.null(exFile)){
@@ -176,7 +183,7 @@ shinyServer(function(input,output,session){
       AllGenes<-result$nAllGenesInCategory
       logOR<-round(result$logOR,2)
       tableEnrichment<<-data.frame(ID,Name,PValue,FDR,NetworkGenes,AllGenes,logOR)
-     datatable(tableEnrichment, options=list(columnDefs=list(list(targets=4)),pageLength = 4))
+     datatable(tableEnrichment, options=list(columnDefs=list(list(targets=4)),pageLength = 7))
     
       
    }
@@ -284,7 +291,7 @@ shinyServer(function(input,output,session){
   
     output$plot<-renderVisNetwork({
     
-      ret<-topHundredNetwork(input$file1$datapath,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=en)
+      ret<-topHundredNetwork(input$file1$datapath,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=en,package=FALSE)
       
     })
    
@@ -375,15 +382,18 @@ shinyServer(function(input,output,session){
     else if(input$algorithm=="2"){
       
       
-      ret<-bioNetwork(input$file1$datapath,upload2="yes",phy=input$phyactive,layOut=input$layout)
+      ret<-bioNetwork(input$file1$datapath,upload2="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
     }
     
     else if(input$algorithm=="3"){
-      ret<-dmGWAS(input$file1$datapath,upload3="yes",phy=input$phyactive,layOut=input$layout)
+      ret<-dmGWAS(input$file1$datapath,upload3="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
     }
     
     else if(input$algorithm=="4"){
-      modifiedBioNetwork(input$file1$datapath,upload4="yes",phy=input$phyactive,layOut=input$layout)
+      modifiedBioNetwork(input$file1$datapath,upload4="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
+    }
+    else if(input$algorithm=="5"){
+      RWR(input$file1$datapath,upload5="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
     }
     
    
@@ -408,7 +418,7 @@ shinyServer(function(input,output,session){
     }
     
     
-  #}
+ # }
     
   )
   

@@ -41,15 +41,25 @@ dashboardPage(
    box(
      title="Network Customization",solidHeader = TRUE,width=13,status="danger",collapsible = TRUE,collapsed = TRUE,
      box(
-       title = "Genes", status = "warning",
+       title = "Layouts", status = "warning",
        collapsible = TRUE,
        collapsed=TRUE,
        solidHeader = TRUE,
        width = 13,
-       textInput("nodeSelect", "Highlight Gene",value=c(), width = NULL, placeholder = NULL)
+       selectInput("layout",
+                   label="select a layout",choices=list("Fruchterman Reingold"=1,"D3layout"=2,"Grid"=3,"Kamada Kawai"=4,"Sphere"=5,"GraphOpt"=6),                  
+                   selected = 1)
+     ),
+   ##  box(
+     ##  title = "Genes", status = "warning",
+      ## collapsible = TRUE,
+      ## collapsed=TRUE,
+       ##solidHeader = TRUE,
+       ##width = 13,
+       ##textInput("nodeSelect", "Highlight Gene",value=c(), width = NULL, placeholder = NULL)
        # sliderInput("nodeSize", "Node Size:", 25, 100, 25)
        #selectInput("Focus", "Focus on node :",choices=list("BRCA1"="BRCA1","ATP"="ATP"),selected = "BRCA1")
-     ),
+   # # ),
      box(
        title = "Physics", status="warning",
        collapsible = TRUE,
@@ -81,19 +91,10 @@ dashboardPage(
          solidHeader = TRUE,
          width = 13,
          selectInput("algorithm",
-                     label="select an algorithm",choices=list("topHundredNetwork"=1,"Bionet"=2,"dmGWAS"=3,"ModBioNet"=4),                  
+                     label="select an algorithm",choices=list("topHundredNetwork"=1,"Bionet"=2,"dmGWAS"=3,"ModBioNet"=4,"RWR"=5),                  
                      selected=1)
        ),
-       box(
-         title = "Layouts", status = "warning",
-         collapsible = TRUE,
-         collapsed=TRUE,
-         solidHeader = TRUE,
-         width = 13,
-         selectInput("layout",
-                     label="select a layout",choices=list("Fruchterman Reingold"=1,"D3layout"=2,"Grid"=3,"Kamada Kawai"=4,"Sphere"=5,"GraphOpt"=6),                  
-                     selected = 1)
-       ),
+      
        box(
          title = "Protein Protein Interaction", status = "warning",
          collapsible = TRUE,
@@ -236,6 +237,9 @@ padding:0px !important;
 .sidebar-menu .box{
 border-radius:0px !important;
 background:none !important;
+}
+#shiny-modal{
+z-index:10000
 }
 /*visNetwork*/
 div.vis-configuration.vis-config-item{}
