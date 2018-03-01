@@ -21,8 +21,15 @@ topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE
   {  if(is.null(upload1)){
        File<-File
        }
-    else{
+   
+       # colnames(File)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
+      
+      else{
     File<-read.csv(file=File,sep='\t')
+    colnames(File)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
+    print(typeof(File))
+    View(File)
+      
     }
   }
   else{
@@ -32,12 +39,12 @@ topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE
   
   sortedFile<-sortNetwork(File)
   logic<-sortedFile
-  
+  print("1")
   if(proteinN=="1"){
   geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F) #interactome
   geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep="")) #interactome
   }
-
+ print("2")
   if(proteinN=="2"){
   
      
@@ -55,7 +62,7 @@ topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE
 
     
   }
-
+ print("3")
 if(proteinN=="1"){
  subnet <- subNetwork(geneLabels, interactome,neighbors = "none")  #interactome
 
@@ -116,7 +123,7 @@ if(proteinN=="1"){
   
  
  
-  
+  print("4")
   id <- nodes(module) #interactome
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]]))) #interactome
 
@@ -172,7 +179,7 @@ if(proteinN=="1"){
   
   edgeData <- data.frame(source, target, stringsAsFactors=FALSE)
   
- 
+  print("5")
 #   network <- createCytoscapeJsNetwork(nodeData, edgeData)
 # 
 #   for(i in 1:length(target)){
@@ -279,7 +286,7 @@ if(proteinN=="1"){
   
  
  
-  
+  print("6")
   ##GO nodes add start ###
   if(!is.null(enrich)){
    
@@ -381,6 +388,7 @@ else{
 
  visObj<-visOptions(visObj,manipulation = TRUE)
 }
+
  #print("works")
  
  #if(package==TRUE)
