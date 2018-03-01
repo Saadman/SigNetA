@@ -11,6 +11,8 @@ library(networkD3)
 library(SigNetA)
 library(visNetwork)
 library(dmGWAS)
+#library(RCurl)
+
 data(interactome)
 statNet<<-NULL
 visImg<<-NULL
@@ -18,7 +20,46 @@ exFile<<-NULL
 en<<-NULL
 tableEnrichment<<-NULL
 shinyServer(function(input,output,session){
+  observe({
+    query<-parseQueryString(session$clientData$url_search)
+    
+    if (!is.null(query[["File"]])) {
+      File<<-query[['File']]
+      ##print(File)
+      #print("woohoo")
+      # File<<- read.delim(file=File)
+      # File<<- read.csv(file=File,sep="\t")
+      # #print(class(File))
+      # #print(data[[GeneNames]])
+      path<-paste("http://dev.ilincs.org/tmp/",query[["File"]],sep="") #get file from url look it up
+     # path<-paste("/Users/Rashid/Desktop/Rashid/Career/PhD/Research/Events/BD2KAllHandsMeeting/signatures/",query[["File"]],sep="")
+      File<<-path
+      # File<<- read.csv(file=path,sep="\t")
+  #File<<-File[complete.cases(File),]
   
+  shinyjs::enable("downloadNetworkImage")
+  shinyjs::show("saveImage")
+  shinyjs::enable("downloadEnrich")
+  shinyjs::show("algorithm")
+  shinyjs::show("layout")
+  shinyjs::show("PPI")
+  shinyjs::show("goAn")
+  toggle(condition = File  , selector = "#tabs li a[data-value=cytonet]")
+  toggle(condition = File, selector = "#tabs li a[data-value=datTable]")
+  toggle(condition = File, selector = "#tabs li a[data-value=irich]")
+  
+Sys.sleep(2)
+  
+  # Hide the loading message when the rest of the server function has executed
+  hide(id = "loading-content", anim = TRUE, animType = "fade")
+      ##print(path)
+      #File<<- read.delim(file=path)
+    }
+    
+    else{
+      File<<-""
+    }
+  })
  observeEvent(input$load_example,{
     
     exFile<<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
@@ -30,9 +71,9 @@ shinyServer(function(input,output,session){
    shinyjs::show("layout")
    shinyjs::show("PPI")
    shinyjs::show("goAn")
-   toggle(condition = input$load_example  , selector = "#tabs li a[data-value=cytonet]")
-   toggle(condition = input$load_example , selector = "#tabs li a[data-value=datTable]")
-   toggle(condition = input$load_example , selector = "#tabs li a[data-value=irich]")
+   toggle(condition = TRUE  , selector = "#tabs li a[data-value=cytonet]")
+   toggle(condition = TRUE , selector = "#tabs li a[data-value=datTable]")
+   toggle(condition = TRUE , selector = "#tabs li a[data-value=irich]")
    
   })
  #shinyjs::toggle(selector = "span.logo",TRUE,condition="[data-collapsed=true]" )
@@ -42,8 +83,11 @@ shinyServer(function(input,output,session){
  
   observe({
   #shinyjs::onclick(".skin-yellow .main-header .navbar .sidebar-toggle ",shinyjs::hide(".skin-yellow .main-header .logo "))
-    if (is.null(input$file1) || input$file1 == "" ) {
-       
+    if (is.null(input$file1) || input$file1 == ""  ) {
+       print(grepl("xls",File))
+      
+        if(!(grepl("xls",File))){
+          print("grepl")
       shinyjs::disable("downloadNetworkImage")
       shinyjs::hide("saveImage")
       shinyjs::disable("downloadEnrich")
@@ -51,8 +95,13 @@ shinyServer(function(input,output,session){
       shinyjs::hide("layout")
       shinyjs::hide("PPI")
       shinyjs::hide("goAn")
+        }
+      else{
+        
+      }
+      
     } else {
-    
+    print("YES")
       shinyjs::enable("downloadNetworkImage")
       shinyjs::show("saveImage")
       shinyjs::enable("downloadEnrich")
@@ -69,10 +118,11 @@ shinyServer(function(input,output,session){
       
     }
     
-    
+    if(is.null(File) || File==""){
     toggle(condition = input$file1  , selector = "#tabs li a[data-value=cytonet]")
     toggle(condition = input$file1, selector = "#tabs li a[data-value=datTable]")
     toggle(condition = input$file1, selector = "#tabs li a[data-value=irich]")
+    }
     
     
     
@@ -147,6 +197,7 @@ observe({
       if(is.null(input$file1)){
         logic<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
       }
+     
       else{
       logic<-read.csv(input$file1$datapath,sep="\t")
       }
@@ -373,11 +424,22 @@ observe({
     
   
   datasetInput <- reactive({
-    if(input$algorithm=="1"){
- 
+    if(input$algorithm=="1" && (!grepl("xls",File))){
+      #if(!is.null(File))
+      #{ print(File)
+     #   ret<-topHundredNetwork(File,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=enrichAdd())
+      #}
+     # else{
+        print(File)
       ret<-topHundredNetwork(input$file1$datapath,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=enrichAdd())
+      #}
       
     }
+    else if(input$algorithm=="1" && (grepl("xls",File))){
+      ret<-topHundredNetwork(File,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=enrichAdd())
+    }
+   
+    
     
     else if(input$algorithm=="2"){
       
