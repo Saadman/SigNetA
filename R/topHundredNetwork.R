@@ -27,8 +27,7 @@ topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE
       else{
     File<-read.csv(file=File,sep='\t')
     colnames(File)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
-    print(typeof(File))
-    View(File)
+   
       
     }
   }
