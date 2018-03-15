@@ -14,6 +14,8 @@ library(dmGWAS)
 #library(RCurl)
 
 data(interactome)
+#statNet <- reactiveValues(df_data = NULL)
+#statNet<-statNet$df_data
 statNet<<-NULL
 visImg<<-NULL
 exFile<<-NULL
@@ -31,7 +33,8 @@ shinyServer(function(input,output,session){
       # File<<- read.csv(file=File,sep="\t")
       # #print(class(File))
       # #print(data[[GeneNames]])
-      path<-paste("http://dev.ilincs.org/tmp/",query[["File"]],sep="") #get file from url look it up
+      path<-paste("http://www.ilincs.org/tmp/",query[["File"]],sep="")
+     # path<-paste("http://dev.ilincs.org/tmp/",query[["File"]],sep="") #get file from url look it up
      # path<-paste("/Users/Rashid/Desktop/Rashid/Career/PhD/Research/Events/BD2KAllHandsMeeting/signatures/",query[["File"]],sep="")
       File<<-path
       # File<<- read.csv(file=path,sep="\t")
@@ -84,10 +87,9 @@ Sys.sleep(2)
   observe({
   #shinyjs::onclick(".skin-yellow .main-header .navbar .sidebar-toggle ",shinyjs::hide(".skin-yellow .main-header .logo "))
     if (is.null(input$file1) || input$file1 == ""  ) {
-       print(grepl("xls",File))
       
         if(!(grepl("xls",File))){
-          print("grepl")
+          
       shinyjs::disable("downloadNetworkImage")
       shinyjs::hide("saveImage")
       shinyjs::disable("downloadEnrich")
@@ -101,7 +103,7 @@ Sys.sleep(2)
       }
       
     } else {
-    print("YES")
+
       shinyjs::enable("downloadNetworkImage")
       shinyjs::show("saveImage")
       shinyjs::enable("downloadEnrich")
@@ -159,6 +161,9 @@ observe({
         enrichmentChange()
         
       }
+      else if(grepl("xls",File)){
+    enrichmentChange()
+     }
       else{
         paste("No genes analyzed")
       }
@@ -195,7 +200,13 @@ observe({
     if(input$algorithm=="1")
     {
       if(is.null(input$file1)){
+        if(!(grepl("xls",File))){
         logic<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
+        }
+        else{
+          logic<-read.csv(file=File,sep='\t')
+          colnames(logic)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
+        }
       }
      
       else{
@@ -204,7 +215,7 @@ observe({
       
       
       logic<-sortNetwork(logic)
-     
+   
       
       geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
       geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))
@@ -213,17 +224,19 @@ observe({
         subnetGenes<-statNet$id
       }
       else{
+        ##IMPORTANT CHANGES TO BE MADE HERE
+        #subnetGenes<-statNet$id ; Look into applying this
       subnetGenes<-gsub("[\\(\\)]", "", regmatches( statNet$id, gregexpr("\\(.*?\\)",  statNet$id)))
       }
       allGenes<-gsub("[\\(\\)]", "", regmatches(geneLabels, gregexpr("\\(.*?\\)", geneLabels)))
    
 
-   
-   
+
+
       result<-geneListEnrichment(subnetGenes, allGenes, functionalCategories = "GO", species = "Hs", minGenesInCategory=10, maxGenesInCategory=1000, inBkg=TRUE, sigFDR = 0.1, verbose=TRUE)
     
       
-      
+   
       
       options(scipen = 999)
       ID<-result$categories
@@ -242,7 +255,13 @@ observe({
    # else if((input$algorithm=="2" && input$layout=="2")||(input$algorithm=="2" && input$layout=="1")){
     else if(input$algorithm=="2" || input$algorithm=="4"){
       if(is.null(input$file1)){
-        logic<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
+        if(!(grepl("xls",File))){
+          logic<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
+        }
+        else{
+          logic<-read.csv(file=File,sep='\t')
+          colnames(logic)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
+        }
       }
       else{
         logic<-read.csv(input$file1$datapath,sep="\t")
@@ -283,20 +302,22 @@ observe({
   tableChange<-function(){ 
 
    # if(input$algorithm=="1" ){
-    
+    if(!is.null(statNet)){
+      
       statNet<-statNet[-c(1,3,4)]
       
       colnames(statNet)<-c("geneName","NCBI Information","geneID","Diff_Exp")
       statNet<-statNet[c("geneName","geneID","Diff_Exp","NCBI Information")]
       
       
+    }
      
       statNet
    # }
   }
  # })
   
-  output$contents <- DT::renderDataTable({
+  output$contents <-DT::renderDataTable({
     
     if (is.null(input$file1) || input$file1 == "" ) {
       if(!is.null(exFile) || is.null(input$PPI)){
@@ -304,6 +325,11 @@ observe({
         tableChange()
         
       }
+      else if(grepl("xls",File)){
+       
+          tableChange()
+      }
+      
       else{
         paste("No genes analyzed")
       }
@@ -319,8 +345,14 @@ observe({
     
     
   })
- 
+
+
+ observeEvent(input$algorithm,{
   
+   tableChange()
+ })
+   
+ 
   observeEvent(input$goAn,{
  
     
@@ -430,32 +462,55 @@ observe({
      #   ret<-topHundredNetwork(File,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=enrichAdd())
       #}
      # else{
-        print(File)
-      ret<-topHundredNetwork(input$file1$datapath,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=enrichAdd())
+       
+     # print("algo 1")
+      RWR(input$file1$datapath,upload5="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
+   
       #}
       
     }
     else if(input$algorithm=="1" && (grepl("xls",File))){
-      ret<-topHundredNetwork(File,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=enrichAdd())
+      #print("algo 1 1")
+      RWR(File,upload5="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
+
     }
    
     
     
-    else if(input$algorithm=="2"){
-      
-      
+    else if(input$algorithm=="2" && (!grepl("xls",File))){
+     # print("algo 2")
+       print(File)
       ret<-bioNetwork(input$file1$datapath,upload2="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
     }
     
-    else if(input$algorithm=="3"){
-      ret<-dmGWAS(input$file1$datapath,upload3="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
+    else if(input$algorithm=="2" && (grepl("xls",File))){
+     # print("algo 2 2")
+      ret<-bioNetwork(File,upload2="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
     }
     
-    else if(input$algorithm=="4"){
+    else if(input$algorithm=="3"  && (!grepl("xls",File))){
+     # print("algo 3")
+      ret<-dmGWAS(input$file1$datapath,upload3="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
+    }
+    else if(input$algorithm=="3"  && (grepl("xls",File))){
+      ret<-dmGWAS(File,upload3="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
+    }
+    
+    else if(input$algorithm=="4" && (!grepl("xls",File))){
+     # print("algo4")
       modifiedBioNetwork(input$file1$datapath,upload4="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
     }
-    else if(input$algorithm=="5"){
-      RWR(input$file1$datapath,upload5="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
+    else if(input$algorithm=="4" && (grepl("xls",File))){
+     # print("algo4 4")
+      modifiedBioNetwork(File,upload4="yes",phy=input$phyactive,layOut=input$layout,package=FALSE)
+    }
+    else if(input$algorithm=="5"  && (!grepl("xls",File))){
+      ret<-topHundredNetwork(input$file1$datapath,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=enrichAdd())
+   
+    }
+    else if(input$algorithm=="5"  && (grepl("xls",File))){
+
+      ret<-topHundredNetwork(File,upload1="yes",layOut=input$layout,proteinN=input$PPI,phy=input$phyactive,enrich=enrichAdd())
     }
     
    

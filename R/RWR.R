@@ -13,6 +13,7 @@ RWR<-function(File=NULL,upload5=NULL,phy=FALSE,layOut=1,package=FALSE){
   library(BioNet)
   library(DLBCL)
   data(interactome)
+  library(visNetwork)
   
   if(!is.null(File))
   {  
@@ -21,6 +22,7 @@ RWR<-function(File=NULL,upload5=NULL,phy=FALSE,layOut=1,package=FALSE){
     }
     else{
       logic<-read.csv(file=File,sep='\t')
+      colnames(logic)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
     }
   }
   else{

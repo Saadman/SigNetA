@@ -17,6 +17,7 @@ if(!is.null(File))
 }
   else{
     File<-read.csv(file=File,sep='\t')
+    colnames(logic)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
   }
 }
 else{
@@ -73,6 +74,28 @@ print("stage 4 passed")
 logFC<-as.numeric(File$coefficients)
 names(logFC)<-File$GeneNames
 colorNet<-plotmodule2(selected$subnetwork, diff.expr =logFC)
+if(layOut=="1"){
+  l<-layout_with_fr(colorNet$n)
+  visLay<-"layout_with_fr"
+}
+
+else if(layOut=="3"){
+  l<-layout_on_grid(colorNet$n)
+  visLay<-"layout_on_grid"
+  
+}
+else if(layOut=="4"){
+  l<-layout_with_kk(colorNet$n)
+  visLay<-"layout_with_kk"
+}
+else if(layOut=="5"){
+  l<-layout_on_sphere(colorNet$n)
+  visLay<-"layout_on_sphere"
+}
+else if(layOut=="6"){
+  l<-layout_with_graphopt(colorNet$n)
+  visLay<-"layout_with_graphopt"
+}
 module<-igraph.to.graphNEL(selected$subnetwork)
 
 conNodes<-function(x){

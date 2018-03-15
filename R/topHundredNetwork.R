@@ -27,7 +27,7 @@ topHundredNetwork<-function(File=NULL,upload1=NULL,layOut=1,proteinN=2,phy=FALSE
       else{
     File<-read.csv(file=File,sep='\t')
     colnames(File)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
-   
+  
       
     }
   }
@@ -162,8 +162,8 @@ if(proteinN=="1"){
   }
  # print(nodeData)
   statNet<<-nodeData
-  
- 
+  #statNet$df_data<<-nodeData
+ print(statNet)
   
   source<-unlist(lapply(1:length(ltn),function(x) rep(id[x],ltn[x])))
 
