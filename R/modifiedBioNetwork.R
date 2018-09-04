@@ -7,30 +7,12 @@
 #' @export
 #' @examples
 #' modifiedBioNetwork() will analyze network for vorinostat signature from ilincs
-modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1,package=FALSE){
-  library(igraph)
-  library(BioNet)
-  library(DLBCL)
-  data(interactome)
-  library(visNetwork)
-  
-  if(!is.null(File))
-  {  
-    if(is.null(upload4)){
-      logic<-File
-    }
-    else{
-      logic<-read.csv(file=File,sep='\t')
-      colnames(logic)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
-    }
-  }
-  else{
-    logic<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
-  }
-  
-  
-  #source("geneInfoFromPortals.R")
-  
+modifiedBioNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoData=NULL,edgeGoData=NULL,proteinN=1){
+
+  logic<-File
+  ##STRING NETWORK ONE(GET MODULE)##  
+  if(proteinN==1)
+  {
   geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
   geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))
   pval<-as.numeric(logic$Pvals)
@@ -45,8 +27,8 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1,package=F
  ## subnet <- rmSelfLoops(subnet)
   
   ####Modified function used#######
-  load(system.file("extdata", "weightedGraphStringPPI_10.rda", package = "SigNetA"))
-  load(system.file("extdata", "lincscp_1.rda", package = "SigNetA"))
+#   load(system.file("extdata", "weightedGraphStringPPI_10.rda", package = "SigNetA"))
+#   load(system.file("extdata", "lincscp_1.rda", package = "SigNetA"))
   ppiGW.copy <- delete.edges(ppiGW, which(E(ppiGW)$weight <=0.7))
   ppi <- rmSelfLoops(ppiGW.copy)
   ppi=decompose.graph(ppi)[[1]]
@@ -57,42 +39,65 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1,package=F
  
   names(pval)<-logic$GeneID
   
-  #module=modules_FastHeinz(subnet=ppi, data_vector=lincscp_1)
+
   module=modules_FastHeinz(subnet=ppi, data_vector=pval)
-  #module=
-  ##modified ends##
-  
-  ##system.time( fb <- fitBumModel(pval, plot = FALSE))
-  #err2<<-try(scoreNodes(subnet, fb, fdr = 0.1),silent=TRUE)
-  #if(class(err2)=="try-error"){
-  # output$input_error=renderText("No significant subnetwork generated.Please upload another Signature.")
-  # }
-  #else{
-  #output$input_error=renderText("")
-  ##system.time(scores <- scoreNodes(subnet, fb, fdr = 0.1))
-  
-  #err<<-try(runFastHeinz(subnet, scores),silent=TRUE)
-  # if(class(err) == "try-error"){
-  #   
-  #   
-  #   output$input_error=renderText("No significant subnetwork generated.Please upload another Signature.")
-  #   stopifnot(class(err) == "try-error")
-  #   
-  # }
-  
-  
-  # else{
-  #output$input_error=renderText("")
-  ##system.time(module <- runFastHeinz(subnet, scores))
+ 
   
   # source("rashidplotmodule.R")
   pdf("wor.pdf")
   colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
 
   module<-igraph.to.graphNEL(colorNet$n) #STRING
+  
   dev.off()
-  #library(rcytoscapejs)
-  ## IGRAPH LAYOUTS FOR RCYTOSCAPEJS2
+
+  }
+  else if(proteinN==2){
+    
+    geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
+    geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))
+    pval<-as.numeric(logic$Pvals)
+    pval<- -log10(pval)
+    names(pval)<-geneLabels
+    
+    logFC<-as.numeric(logic$coefficients)
+    names(logFC)<-geneLabels
+    
+    
+    
+    ####Modified function used#######
+    
+    ppi<- rmSelfLoops(interactome)
+    
+    #ppi=decompose.graph(ppi)[[1]] #get the largest subgraph
+    
+    ###Identify module using FastHeinz algorithm, nsize is fixed to 30 nodes
+    
+    
+    
+    names(pval)<-logic$GeneID
+    
+    
+    module=modules_FastHeinz(subnet=ppi, data_vector=pval)
+   
+    pdf("wor.pdf")
+    colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
+    
+    
+    module<-igraph.to.graphNEL(colorNet$n) #STRING
+  
+    dev.off()
+    
+    
+    
+    
+    
+  }
+  
+  
+  ##END...STRING NETWORK  ONE(GET MODULE##  
+  
+  ## IGRAPH LAYOUTS 
   if(layOut=="1"){
     l<-layout_with_fr(colorNet$n)
     visLay<-"layout_with_fr"
@@ -253,7 +258,32 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1,package=F
   }
   edgeVisData = edgeVisData[!duplicated(edgeVisData),]
   
-  visObj<- visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
+  ##STRING TWO(ADDING EDGE VALUES)#
+  
+  if(proteinN=="1"){
+    
+    
+    edgeVisData$title<-"ppi"
+    edgeVisDataMod<-merge(edgeVisData,s,by.x = c("from","to"),by.y =c("a","b"),all.x = TRUE)
+    
+    for(i in 1:nrow(edgeVisDataMod)){
+      edgeVisDataMod$title[i]<-paste0("<p><b>Neighborhood score:</b>",edgeVisDataMod$f.neighborhood[i],"</p><b>Fusion score:</b>",edgeVisDataMod$f.fusion[i],"</p><b>Cooccurence score:</b>",edgeVisDataMod$f.cooccurence[i],"</p><b>Coexpression score:</b>",edgeVisDataMod$f.coexpression[i],"</p><b>Experimental score:</b>",edgeVisDataMod$f.experimental[i],"</p><b>Database score:</b>",edgeVisDataMod$f.database[i],"</p><b>Textmining score:</b>",edgeVisDataMod$f.textmining[i],"</p><b>Combined score:</b>",edgeVisDataMod$f.combined_score[i],"</p>")
+    }
+    edgeVisData<-edgeVisDataMod
+  }
+  
+  ##END...STRING TWO (ADDING EDGE VALUES)##
+  if(is.null(nodeGoData) & is.null(edgeGoData))
+  {
+    
+    visObj<- visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
+    
+  }
+  else{
+    visObj<- visNetwork(nodeGoData, edgeGoData,height="800px",width="900px")
+    # visObj<-enrichObj
+  }
+
 
   visObj<-visExport(visObj,type ="png", name="network",float="right")
   
@@ -275,12 +305,7 @@ modifiedBioNetwork<-function(File=NULL,upload4=NULL,phy=FALSE,layOut=1,package=F
     visObj<-visOptions(visObj,manipulation = TRUE)
   }
   
-  #plotInput(network,network$nodes,network$edges)
-  #rcytoscapejs2(network$nodes, network$edges,width=1500,height=1800, layout="spread", showPanzoom=TRUE)
-  #}
-  
-  ###END FILE GENERATE UPLOAD NETWORK###
-  #}
+  return(list("networkObj"=visObj,"networkData"=statNet,"edgeData"=edgeVisData,"nodeData"=nodeVisData))
   
   
 } #end of bionet algorithm

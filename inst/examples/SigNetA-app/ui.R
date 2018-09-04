@@ -37,10 +37,10 @@ dashboardPage(
      # h4("Load Example"),
       actionButton("load_example","Load Example")),
     selectInput("algorithm",
-                label="select an algorithm",choices=list("RWR"=1,"Bionet"=2,"dmGWAS"=3,"ModBioNet"=4,"SortNet"=5),                  
+                label="select an algorithm",choices=list("RWR"=1,"ModBioNet"=4,"SortNet"=5),                  
                 selected=1),
     selectInput("PPI",
-                label="select a network",choices=list("Interactome"=1,"STRING"=2),                  
+                label="select a network",choices=list("STRING"=1,"Interactome"=2),                  
                 selected = 1),
    # tags$br(),
      # h4("Download Network"),
@@ -115,7 +115,7 @@ dashboardPage(
     box(
       title="Downloads",solidHeader = TRUE,width=13,status="danger",collapsible = TRUE,collapsed = TRUE,
       tags$br(),
-      downloadButton('downloadNetworkImage', 'Download Network Data'),
+      downloadButton('downloadNetworkData', 'Download Network Data'),
      tags$br(),
    
      # actionLink("saveImage", "Download as PNG"),
@@ -305,6 +305,7 @@ div.vis-configuration.vis-config-item.vis-config-s3{}
                                    tags$div("Loading...",id="loadmessage")
                   ),
                   textOutput(outputId="input_error2"),
+                 sliderInput("enrichFDR","Set FDR for enrichment",min=0.05,max=1,value=0.1),
                   
                   DT::dataTableOutput('enrichmentAnalysis')
                   
