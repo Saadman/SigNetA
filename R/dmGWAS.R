@@ -36,18 +36,18 @@ dmGWAS<-function(File=NULL,layOut=1,proteinN=1,phy=FALSE,package=FALSE,nodeGoDat
     
     gene2weight<-topgenes
     
-    print("stage 1 passed")
+   # print("stage 1 passed")
     ppiGW.copy <- delete.edges(ppiGW, which(E(ppiGW)$weight <=0.7))
     ppi <- rmSelfLoops(ppiGW.copy)
     ppi=decompose.graph(ppi)[[1]]
-    print(typeof(ppi))
-    print(ppi)
+   # print(typeof(ppi))
+   # print(ppi)
     #i_interactome<-igraph.from.graphNEL(interactome)
     
     ppinetwork<-as.data.frame(get.edgelist(ppi))
     ppinetwork$V1<-sub(" *\\(.*", "", ppinetwork$V1)
     ppinetwork$V2<-sub(" *\\(.*", "", ppinetwork$V2)
-    print(head(ppinetwork))
+    #print(head(ppinetwork))
     #p_val<-c()
     #for(i in 1:length(gene2weight$weight))
     # { 
@@ -61,7 +61,7 @@ dmGWAS<-function(File=NULL,layOut=1,proteinN=1,phy=FALSE,package=FALSE,nodeGoDat
     # gene2weight$weight[i]<-0.0000001
     # }
     #}
-    print("stage 2 passed")
+   # print("stage 2 passed")
     res.list = dms(ppinetwork, gene2weight, d=1, r=0.1) #works for 300 genes and d=1
     
     ##error while running res.list with different parameters
@@ -69,9 +69,9 @@ dmGWAS<-function(File=NULL,layOut=1,proteinN=1,phy=FALSE,package=FALSE,nodeGoDat
     ##200 genes error is -Error in identical.idx[[k]] : subscript out of bounds
     ##201 and above works
     ##
-    print("stage 3 passed")
+   # print("stage 3 passed")
     selected = simpleChoose(res.list, top=100, plot=T) 
-    print("stage 4 passed")
+    #print("stage 4 passed")
     
     #source("ExtraFiles/dmGWAS/plotmodule2.R")
     logFC<-as.numeric(File$coefficients)
@@ -90,14 +90,14 @@ topgenes<-head(sorted,201)
 
 gene2weight<-topgenes
 
-print("stage 1 passed")
+#print("stage 1 passed")
 
 i_interactome<-igraph.from.graphNEL(interactome)
 
 ppinetwork<-as.data.frame(get.edgelist(i_interactome))
 ppinetwork$V1<-sub(" *\\(.*", "", ppinetwork$V1)
 ppinetwork$V2<-sub(" *\\(.*", "", ppinetwork$V2)
-print(head(ppinetwork))
+#print(head(ppinetwork))
 #p_val<-c()
 #for(i in 1:length(gene2weight$weight))
 # { 
@@ -111,7 +111,7 @@ print(head(ppinetwork))
 # gene2weight$weight[i]<-0.0000001
 # }
 #}
-print("stage 2 passed")
+#print("stage 2 passed")
 res.list = dms(ppinetwork, gene2weight, d=2, r=0.1) #works for 300 genes and d=1
 
 ##error while running res.list with different parameters
@@ -119,9 +119,9 @@ res.list = dms(ppinetwork, gene2weight, d=2, r=0.1) #works for 300 genes and d=1
 ##200 genes error is -Error in identical.idx[[k]] : subscript out of bounds
 ##201 and above works
 ##
-print("stage 3 passed")
+#print("stage 3 passed")
 selected = simpleChoose(res.list, top=100, plot=T) 
-print("stage 4 passed")
+#print("stage 4 passed")
 
 #source("ExtraFiles/dmGWAS/plotmodule2.R")
 logFC<-as.numeric(File$coefficients)
@@ -213,7 +213,7 @@ normalize <- function(x) {
 }
 
 
-print(label)
+#print(label)
 for(i in 1:length(label)){
   nodeVisData[i,3]<-colorNet$c[i];
   nodeVisData[i,6]<-paste0("<p><b>Gene name:</b>",statNet$name[i],"</p><br><p><b>Differential Expression:</b>",statNet$Diff_Exp[i])
@@ -230,18 +230,18 @@ for(i in 1:length(label)){
   
 }
 
-print(nodeVisData)
+#print(nodeVisData)
 
 nodeVisData<-data.frame(nodeVisData[1:7], apply(nodeVisData["size"],2, normalize) )
 for( l in 1:length(nodeVisData$size)){
-  print(nodeVisData$size[l])
+  #print(nodeVisData$size[l])
   if(nodeVisData$size[l]<1)
   {
     nodeVisData$size[l]<-1
   }
 }
 
-print(nodeVisData)
+#print(nodeVisData)
 
 
 ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]])))

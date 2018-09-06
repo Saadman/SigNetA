@@ -106,15 +106,14 @@ topHundredNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDat
     #module=modules_RWR_TopScores(subnet=ppi, data_vector=pval, damping_factor=0.8, nseeds=10)
     module <- subNetwork(logic$GeneID, ppi,neighbors = "none")
     
-    print(typeof(module))
-    print(module)
-    pdf("wor.pdf")
+   
+    #pdf("wor.pdf")
     colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
     
     
     
     module<-igraph.to.graphNEL(colorNet$n) #STRING
-    dev.off()
+   # dev.off()
     
     
   }
@@ -146,15 +145,13 @@ topHundredNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDat
     
     
     module=modules_RWR_TopScores(subnet=ppi, data_vector=pval, damping_factor=0.8, nseeds=10)
-    print("Interactome")
-    print(typeof(module))
-    print(module)
-    pdf("wor.pdf")
+  
+   # pdf("wor.pdf")
     colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
     
     
     module<-igraph.to.graphNEL(colorNet$n) #STRING
-    dev.off()
+   # dev.off()
     
     
     
@@ -201,7 +198,7 @@ topHundredNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDat
   
  
  
-  print("4")
+  
   id <- nodes(module) #interactome
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]]))) #interactome
 
@@ -242,7 +239,7 @@ topHundredNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDat
  # print(nodeData)
   statNet<<-nodeData
   #statNet$df_data<<-nodeData
- print(statNet)
+
   
   source<-unlist(lapply(1:length(ltn),function(x) rep(id[x],ltn[x])))
 

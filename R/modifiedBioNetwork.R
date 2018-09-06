@@ -44,12 +44,12 @@ modifiedBioNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDa
  
   
   # source("rashidplotmodule.R")
-  pdf("wor.pdf")
+ # pdf("wor.pdf")
   colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
 
   module<-igraph.to.graphNEL(colorNet$n) #STRING
   
-  dev.off()
+ # dev.off()
 
   }
   else if(proteinN==2){

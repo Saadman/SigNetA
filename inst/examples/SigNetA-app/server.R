@@ -6,9 +6,10 @@ shinyServer(function(input,output,session){
   
   ##HIDE/SHOW BASED ON WHETHER FILE UPLOADED OR EXAMPLE FILE LOADED
   observe({
-    print(typeof(input$load_example[1]))
-    print(is.null(input$file1))
-      if ( input$load_example[1]==0 && is.null(input$file1)) {
+       
+      if ( input$load_example[1]==0 && is.null(input$file1) && session$clientData$url_search=="") {
+        
+        
         
         shinyjs::disable("downloadNetworkData")
               shinyjs::hide("saveImage")
@@ -51,11 +52,34 @@ shinyServer(function(input,output,session){
   
   ##LOAD FILE BASED ON WHETHER IT'S UPLOADED,LOAD EXAMPLE OR URL##
   
+  observeEvent(session$clientData$url_search,{
+    if(session$clientData$url_search!=""){
+      
+      nodeGO<<-NULL #To go back to default network construction and delete GO nodes
+      edgeGO<<-NULL
+      
+      updateTabsetPanel(session, "tabs", selected = "cytonet")
+    parsedGET<-parseQueryString(session$clientData$url_search)
+     if (!is.null(parsedGET[["File"]])) {
+       path<-paste("http://www.ilincs.org/tmp/",parsedGET[["File"]],sep="")
+        #path<-paste("/Users/Rashid/Desktop/Rashid/Career/PhD/Research/Events/BD2KAllHandsMeeting/signatures/",parsedGET[["File"]],sep="")
+        loadedFile<<-read.csv(file=path,sep="\t")
+        loadedFile<<-loadedFile[,1:5]
+        colnames(loadedFile)<<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
+     
+    
+    }
+    
+    }
+    
+  })
+  
   observeEvent(input$load_example,{
     nodeGO<<-NULL #To go back to default network construction and delete GO nodes
     edgeGO<<-NULL
     loadedFile<<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
-    colnames(loadedFile)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
+    loadedFile<<-loadedFile[,1:5]
+    colnames(loadedFile)<<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
   })
   
   
@@ -63,7 +87,8 @@ shinyServer(function(input,output,session){
     nodeGO<<-NULL #To go back to default network construction and delete GO nodes
     edgeGO<<-NULL
     loadedFile<<-read.csv(file=input$file1$datapath,sep="\t")
-    colnames(loadedFile)<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
+    loadedFile<<-loadedFile[,1:5]
+    colnames(loadedFile)<<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
     
   })
   
@@ -335,15 +360,12 @@ for(j in 1:ncol(addGO)){
   
 if(input$PPI==1){
   GOdataframe<-data.frame(from,to,title=NA,X=NA,f.neighborhood=NA,f.fusion=NA,f.cooccurence=NA,f.coexpression=NA,f.experimental=NA,f.database=NA,f.textmining=NA,f.combined_score=NA,a_symbols=NA,b_symbols=NA) 
-  print(names(GOdataframe))
+ 
   }
 else if (input$PPI==2){
 GOdataframe<-data.frame(from,to) 
 }
-print("GOdataframe")
-print(names(GOdataframe))
-print("edge connections")
-print(names(netcon))
+
 
 netconGO<-rbind(netcon,GOdataframe) #add from,to edgelist from existing network to newly added GO pathway
 

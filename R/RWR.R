@@ -45,8 +45,7 @@ if(proteinN==1){
   pdf("wor.pdf")
   colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
   
-  print("rwr colornet")
-  print(colorNet)
+
   
   module<-igraph.to.graphNEL(colorNet$n) #STRING
   dev.off()
@@ -81,15 +80,13 @@ else if(proteinN==2){
   
   
   module=modules_RWR_TopScores(subnet=ppi, data_vector=pval, damping_factor=0.8, nseeds=10)
-  print("Interactome")
-  print(typeof(module))
-  print(module)
-  pdf("wor.pdf")
+  
+  #pdf("wor.pdf")
   colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
 
   
   module<-igraph.to.graphNEL(colorNet$n) #STRING
-  dev.off()
+  #dev.off()
     
     
     
@@ -270,8 +267,7 @@ else if(proteinN==2){
   ##END...STRING TWO (ADDING EDGE VALUES)##
   if(is.null(nodeGoData) & is.null(edgeGoData))
   {
-     View(nodeVisData)
-    View(edgeVisData)
+    
   visObj<- visNetwork(nodeVisData, edgeVisData,height="800px",width="900px")
   
   }

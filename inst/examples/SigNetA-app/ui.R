@@ -53,7 +53,7 @@ dashboardPage(
        solidHeader = TRUE,
        width = 13,
        selectInput("layout",
-                   label="select a layout",choices=list("Fruchterman Reingold"=1,"D3layout"=2,"Grid"=3,"Kamada Kawai"=4,"Sphere"=5,"GraphOpt"=6),                  
+                   label="select a layout",choices=list("Fruchterman Reingold"=1,"Grid"=3,"Kamada Kawai"=4,"Sphere"=5,"GraphOpt"=6),                  
                    selected = 1)
      ),
    ##  box(

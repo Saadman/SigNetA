@@ -6,7 +6,7 @@ library(BioNet)
 library(igraph)
 library(CLEAN)
 library(CLEAN.Hs)
-library(networkD3)
+
 library(SigNetA)
 library(visNetwork)
 #library(dmGWAS) #version 2.4

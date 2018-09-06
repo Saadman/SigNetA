@@ -16,7 +16,7 @@ modules_RWR_TopScores=function(subnet,data_vector,damping_factor,nseeds)
   
     
   }
- print(V(subnet)$name[1:3])
+# print(V(subnet)$name[1:3])
   nsize=30
   
   input_scores=abs(data_vector)[names(data_vector) %in% V(subnet)$name]
@@ -49,7 +49,7 @@ modules_RWR_TopScores=function(subnet,data_vector,damping_factor,nseeds)
     
     module_test=modules[[largest]]
     nsize_test <- vcount(module_test)
-    print(nsize_test)
+    #print(nsize_test)
     if (nsize_test >= nsize) {
       break
     }
