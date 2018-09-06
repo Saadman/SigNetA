@@ -12,10 +12,10 @@ library(visNetwork)
 #library(dmGWAS) #version 2.4
 library(RCurl)
 library(devtools)
-library(roxygen2)
+#library(roxygen2)
 data(interactome)
 
-document()
+#document()
 
 loadedFile<<-c()  #global File input handler
 netData<<-c() #global network data input handler
