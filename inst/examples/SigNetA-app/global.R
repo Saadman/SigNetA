@@ -24,9 +24,12 @@ nodeGO<<-NULL #visobject node  with GO terms in it
 edgeGO<<-NULL #visobject edge with GO terms in it
 
 ##Load STRING Data##
-load(system.file("extdata", "weightedGraphStringPPI_10.rda", package = "SigNetA")) #STRING PPI network
-load(system.file("extdata", "stringToEntrezDetailed.Rdata", package = "SigNetA")) #edge data
-load(system.file("extdata", "lincscp_1.rda", package = "SigNetA"))
+
+
+load(url("http://www.ilincs.org/tmp/signeta/weightedGraphStringPPI_10.rda")) #STRING PPI network
+load(url("http://www.ilincs.org/tmp/signeta/stringToEntrezDetailed.Rdata")) #edge data
+load( url("http://www.ilincs.org/tmp/signeta/lincscp_1.rda"))
+
 
 ##END..Load STRING Data##
 
