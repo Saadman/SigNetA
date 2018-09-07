@@ -42,13 +42,13 @@ if(proteinN==1){
   
   module=modules_RWR_TopScores(subnet=ppi, data_vector=pval, damping_factor=0.8, nseeds=10)
   
-  pdf("wor.pdf")
+
   colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
   
 
   
   module<-igraph.to.graphNEL(colorNet$n) #STRING
-  dev.off()
+
   
   
 }

@@ -80,13 +80,13 @@ modifiedBioNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDa
     
     module=modules_FastHeinz(subnet=ppi, data_vector=pval)
    
-    pdf("wor.pdf")
+    #pdf("wor.pdf")
     colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
     
     
     module<-igraph.to.graphNEL(colorNet$n) #STRING
   
-    dev.off()
+   # dev.off()
     
     
     
