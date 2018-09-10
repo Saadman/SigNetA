@@ -31,7 +31,7 @@ edgeGO<<-NULL #visobject edge with GO terms in it
 # load( url("http://www.ilincs.org/tmp/signeta/lincscp_1.rda"))
 
 load("/tmp/datasets/weightedGraphStringPPI_10.rda") #STRING PPI network
-load("/tmp/datasets/stringToEntrezDetailed.Rdata") #edge data
+load("/tmp/datasets/stringToEntrezDetailed.rda") #edge data
 load( "/tmp/datasets/lincscp_1.rda")
 
 
