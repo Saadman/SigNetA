@@ -61,7 +61,8 @@ shinyServer(function(input,output,session){
       updateTabsetPanel(session, "tabs", selected = "cytonet")
     parsedGET<-parseQueryString(session$clientData$url_search)
      if (!is.null(parsedGET[["File"]])) {
-       path<-paste("http://www.ilincs.org/tmp/",parsedGET[["File"]],sep="")
+       # path<-paste("http://www.ilincs.org/tmp/",parsedGET[["File"]],sep="")
+       path<-paste("/mnt/raid/tmp/",parsedGET[["File"]],sep="")
         #path<-paste("/Users/Rashid/Desktop/Rashid/Career/PhD/Research/Events/BD2KAllHandsMeeting/signatures/",parsedGET[["File"]],sep="")
         loadedFile<<-read.csv(file=path,sep="\t")
         loadedFile<<-loadedFile[,1:5]
