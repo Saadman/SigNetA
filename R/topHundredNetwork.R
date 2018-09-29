@@ -79,7 +79,8 @@ topHundredNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDat
   ##STRING NETWORK ONE(GET MODULE)##  
   if(proteinN==1){
     
-    geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
+    #geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
+    geninfo<- geneData[which(geneData$GeneID%in%as.character(logic$GeneID)),]
     geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))
     pval<-as.numeric(logic$Pvals)
     pval<- -log10(pval)
@@ -121,7 +122,8 @@ topHundredNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDat
   
   else if(proteinN==2){
     
-    geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
+   # geninfo<-geneInfoFromPortals(geneList=as.character(logic$GeneID),symbol=T,names=F)
+    geninfo<- geneData[which(geneData$GeneID%in%as.character(logic$GeneID)),]
     geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))
     pval<-as.numeric(logic$Pvals)
     pval<- -log10(pval)
@@ -212,7 +214,8 @@ topHundredNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDat
 #   }
 #   if(proteinN=="1")
 #   {
-  geninfo2<-geneInfoFromPortals(geneList=as.character(id),symbol=T,names=F) #STRING
+ # geninfo2<-geneInfoFromPortals(geneList=as.character(id),symbol=T,names=F) #STRING
+  geninfo2<- geneData[which(geneData$GeneID%in%as.character(id)),]
   name<-apply(geninfo2,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))#STRING
   label<-apply(geninfo2,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep=""))
   #}

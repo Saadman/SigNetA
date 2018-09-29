@@ -61,8 +61,8 @@ shinyServer(function(input,output,session){
       updateTabsetPanel(session, "tabs", selected = "cytonet")
     parsedGET<-parseQueryString(session$clientData$url_search)
      if (!is.null(parsedGET[["File"]])) {
-        path<-paste("http://www.ilincs.org/tmp/",parsedGET[["File"]],sep="")
-       ##path<-paste("/mnt/raid/tmp/",parsedGET[["File"]],sep="")
+        #path<-paste("http://www.ilincs.org/tmp/",parsedGET[["File"]],sep="")
+       path<-paste("/mnt/raid/tmp/",parsedGET[["File"]],sep="")
         #path<-paste("/Users/Rashid/Desktop/Rashid/Career/PhD/Research/Events/BD2KAllHandsMeeting/signatures/",parsedGET[["File"]],sep="")
         loadedFile<<-read.csv(file=path,sep="\t")
       
@@ -215,9 +215,12 @@ shinyServer(function(input,output,session){
           fdr<-input$enrichFDR
           
           
-          geninfo<-geneInfoFromPortals(geneList=as.character(loadedFile$GeneID),symbol=T,names=F)
+          #geninfo<-geneInfoFromPortals(geneList=as.character(loadedFile$GeneID),symbol=T,names=F)
+          geninfo<- geneData[which(geneData$GeneID%in%as.character(loadedFile$GeneID)),]
           geneLabels<-apply(geninfo,1,function(x) paste(x[2],"(",as.integer(x[1]),")",sep="")) 
-          
+         print("enrichment")
+      
+           print(geneLabels)
           
           subnetGenes<-netData$geneID
           allGenes<-gsub("[\\(\\)]", "", regmatches(geneLabels, gregexpr("\\(.*?\\)", geneLabels)))
