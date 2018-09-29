@@ -30,8 +30,9 @@ if(proteinN==1){
   ####Modified function used#######
  # load(system.file("extdata", "weightedGraphStringPPI_10.rda", package = "SigNetA"))
  # load(system.file("extdata", "lincscp_1.rda", package = "SigNetA"))
-  ppiGW.copy <- delete.edges(ppiGW, which(E(ppiGW)$weight <=0.7))
-  ppi <- rmSelfLoops(ppiGW.copy)
+  #ppiGW.copy <- delete.edges(ppiGW, which(E(ppiGW)$weight <=0.7))
+ # ppi <- rmSelfLoops(igraph.to.graphNEL(ppiGW.copy))
+  ppi<-igraph::simplify(ppiGW,remove.loops = TRUE,remove.multiple = FALSE)
   ppi=decompose.graph(ppi)[[1]] #get the largest subgraph
   
   ###Identify module using FastHeinz algorithm, nsize is fixed to 30 nodes
@@ -40,12 +41,13 @@ if(proteinN==1){
   
   names(pval)<-logic$GeneID
   
+
   module=modules_RWR_TopScores(subnet=ppi, data_vector=pval, damping_factor=0.8, nseeds=10)
   
 
   colorNet<-plotmodule2(module, scores =  V(module)$score, diff.expr = logFC)
   
-
+ 
   
   module<-igraph.to.graphNEL(colorNet$n) #STRING
 
@@ -228,7 +230,7 @@ else if(proteinN==2){
   
   
   
-  
+
   ltn<-unlist(lapply(edgeL(module),function(x) length(x[[1]])))
   
   sourceVis<-unlist(lapply(1:length(ltn),function(x) rep(id[x],ltn[x])))
@@ -242,6 +244,7 @@ else if(proteinN==2){
   
   
   edgeVisData <- data.frame(from=sourceVis, to=targetVis, stringsAsFactors=FALSE)
+ 
 
   for (i in 1:nrow(edgeVisData))
   {
@@ -256,7 +259,9 @@ else if(proteinN==2){
     
     
     edgeVisData$title<-"ppi"
-    edgeVisDataMod<-merge(edgeVisData,s,by.x = c("from","to"),by.y =c("a","b"),all.x = TRUE)
+    edgeVisDataMod<-igraph::as_data_frame(igraph.from.graphNEL(module),what="edges")
+
+    #edgeVisDataMod<-merge(edgeVisData,s,by.x = c("from","to"),by.y =c("a","b"),all.x = TRUE)
    
     for(i in 1:nrow(edgeVisDataMod)){
       edgeVisDataMod$title[i]<-paste0("<p><b>Neighborhood score:</b>",edgeVisDataMod$f.neighborhood[i],"</p><b>Fusion score:</b>",edgeVisDataMod$f.fusion[i],"</p><b>Cooccurence score:</b>",edgeVisDataMod$f.cooccurence[i],"</p><b>Coexpression score:</b>",edgeVisDataMod$f.coexpression[i],"</p><b>Experimental score:</b>",edgeVisDataMod$f.experimental[i],"</p><b>Database score:</b>",edgeVisDataMod$f.database[i],"</p><b>Textmining score:</b>",edgeVisDataMod$f.textmining[i],"</p><b>Combined score:</b>",edgeVisDataMod$f.combined_score[i],"</p>")

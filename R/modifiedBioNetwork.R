@@ -29,8 +29,9 @@ modifiedBioNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDa
   ####Modified function used#######
 #   load(system.file("extdata", "weightedGraphStringPPI_10.rda", package = "SigNetA"))
 #   load(system.file("extdata", "lincscp_1.rda", package = "SigNetA"))
-  ppiGW.copy <- delete.edges(ppiGW, which(E(ppiGW)$weight <=0.7))
-  ppi <- rmSelfLoops(ppiGW.copy)
+  #ppiGW.copy <- delete.edges(ppiGW, which(E(ppiGW)$weight <=0.7))
+  #ppi <- rmSelfLoops(ppiGW.copy)
+  ppi<-igraph::simplify(ppiGW,remove.loops = TRUE,remove.multiple = FALSE)
   ppi=decompose.graph(ppi)[[1]]
   
   ###Identify module using FastHeinz algorithm, nsize is fixed to 30 nodes
@@ -264,8 +265,8 @@ modifiedBioNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDa
     
     
     edgeVisData$title<-"ppi"
-    edgeVisDataMod<-merge(edgeVisData,s,by.x = c("from","to"),by.y =c("a","b"),all.x = TRUE)
-    
+    #edgeVisDataMod<-merge(edgeVisData,s,by.x = c("from","to"),by.y =c("a","b"),all.x = TRUE)
+    edgeVisDataMod<-igraph::as_data_frame(igraph.from.graphNEL(module),what="edges")
     for(i in 1:nrow(edgeVisDataMod)){
       edgeVisDataMod$title[i]<-paste0("<p><b>Neighborhood score:</b>",edgeVisDataMod$f.neighborhood[i],"</p><b>Fusion score:</b>",edgeVisDataMod$f.fusion[i],"</p><b>Cooccurence score:</b>",edgeVisDataMod$f.cooccurence[i],"</p><b>Coexpression score:</b>",edgeVisDataMod$f.coexpression[i],"</p><b>Experimental score:</b>",edgeVisDataMod$f.experimental[i],"</p><b>Database score:</b>",edgeVisDataMod$f.database[i],"</p><b>Textmining score:</b>",edgeVisDataMod$f.textmining[i],"</p><b>Combined score:</b>",edgeVisDataMod$f.combined_score[i],"</p>")
     }

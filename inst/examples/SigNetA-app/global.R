@@ -12,8 +12,9 @@ library(visNetwork)
 #library(dmGWAS) #version 2.4
 library(RCurl)
 library(devtools)
+library(profvis) ##to be deleted
 #library(roxygen2)
-data(interactome)
+#data(interactome)
 
 #document()
 
@@ -26,13 +27,17 @@ edgeGO<<-NULL #visobject edge with GO terms in it
 ##Load STRING Data##
 
 
-# load(url("http://www.ilincs.org/tmp/signeta/weightedGraphStringPPI_10.rda")) #STRING PPI network
-# load(url("http://www.ilincs.org/tmp/signeta/stringToEntrezDetailed.Rdata")) #edge data
+#load(url("http://www.ilincs.org/tmp/signeta/weightedGraphStringPPI_10.rda")) #STRING PPI network
+#load(url("http://www.ilincs.org/tmp/signeta/stringToEntrezDetailed.Rdata")) #edge data
 # load( url("http://www.ilincs.org/tmp/signeta/lincscp_1.rda"))
+# load("/Users/Rashid/Desktop/Rpackages/weightedGraphStringPPI_10.rda")#new STRING PPI network
+# load("/Users/Rashid/Desktop/Rpackages/interactome.rda")
 
 load("/tmp/datasets/weightedGraphStringPPI_10.rda") #STRING PPI network
-load("/tmp/datasets/stringToEntrezDetailed.rda") #edge data
+#load("/tmp/datasets/stringToEntrezDetailed.rda") #edge data
+load("/tmp/datasets/interactome.rda")#interactome
 load( "/tmp/datasets/lincscp_1.rda")
+
 
 
 ##END..Load STRING Data##

@@ -61,13 +61,14 @@ shinyServer(function(input,output,session){
       updateTabsetPanel(session, "tabs", selected = "cytonet")
     parsedGET<-parseQueryString(session$clientData$url_search)
      if (!is.null(parsedGET[["File"]])) {
-       # path<-paste("http://www.ilincs.org/tmp/",parsedGET[["File"]],sep="")
-       path<-paste("/mnt/raid/tmp/",parsedGET[["File"]],sep="")
+        path<-paste("http://www.ilincs.org/tmp/",parsedGET[["File"]],sep="")
+       ##path<-paste("/mnt/raid/tmp/",parsedGET[["File"]],sep="")
         #path<-paste("/Users/Rashid/Desktop/Rashid/Career/PhD/Research/Events/BD2KAllHandsMeeting/signatures/",parsedGET[["File"]],sep="")
         loadedFile<<-read.csv(file=path,sep="\t")
+      
         loadedFile<<-loadedFile[,1:5]
         colnames(loadedFile)<<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
-     
+       
     
     }
     
@@ -78,6 +79,7 @@ shinyServer(function(input,output,session){
   observeEvent(input$load_example,{
     nodeGO<<-NULL #To go back to default network construction and delete GO nodes
     edgeGO<<-NULL
+    updateTabsetPanel(session, "tabs", selected = "cytonet")
     loadedFile<<-read.csv(file=system.file("extdata", "sig_try3.tsv", package = "SigNetA"),sep='\t')
     loadedFile<<-loadedFile[,1:5]
     colnames(loadedFile)<<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
@@ -87,6 +89,7 @@ shinyServer(function(input,output,session){
   observeEvent(input$file1,{
     nodeGO<<-NULL #To go back to default network construction and delete GO nodes
     edgeGO<<-NULL
+    updateTabsetPanel(session, "tabs", selected = "cytonet")
     loadedFile<<-read.csv(file=input$file1$datapath,sep="\t")
     loadedFile<<-loadedFile[,1:5]
     colnames(loadedFile)<<-c("signatureID","GeneID","GeneNames","coefficients","Pvals")
@@ -360,7 +363,7 @@ for(j in 1:ncol(addGO)){
   
   
 if(input$PPI==1){
-  GOdataframe<-data.frame(from,to,title=NA,X=NA,f.neighborhood=NA,f.fusion=NA,f.cooccurence=NA,f.coexpression=NA,f.experimental=NA,f.database=NA,f.textmining=NA,f.combined_score=NA,a_symbols=NA,b_symbols=NA) 
+  GOdataframe<-data.frame(from,to,title=NA,weight=NA,X=NA,f.neighborhood=NA,f.fusion=NA,f.cooccurence=NA,f.coexpression=NA,f.experimental=NA,f.database=NA,f.textmining=NA,f.combined_score=NA,a_symbols=NA,b_symbols=NA) 
  
   }
 else if (input$PPI==2){
@@ -424,6 +427,16 @@ observeEvent(input$PPI,{
     
      
 ##END..DETECT CHANGES IN APP FOR REMOVING GO PATHWAYS##
+
+
+##CHANGE TAB WHEN GO PATHWAYS ADDED/DELETED##
+
+observeEvent(input$goAn,{
+  
+
+  updateTabsetPanel(session, "tabs", selected = "cytonet")
+  
+})
   
   
   
