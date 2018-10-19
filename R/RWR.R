@@ -205,7 +205,7 @@ else if(proteinN==2){
   nodeVisData$label<-sub(" *\\(.*", "", nodeVisData$label)
   
   normalize <- function(x) {
-    return (((x - min(x)) / (max(x) - min(x)))*50)
+    return (((x*2 - min(x)) / (max(x) - min(x)))*50)
   }
   
   
@@ -213,17 +213,28 @@ else if(proteinN==2){
     nodeVisData[i,3]<-colorNet$c[i];
     nodeVisData[i,6]<-paste0("<p><b>Gene name:</b>",statNet$name[i],"</p><br><p><b>Gene ID:</b>",statNet$geneID[i],"</p><br><p><b>Differential Expression:</b>",statNet$Diff_Exp[i],"</p><p><b>NCBI link:</b><a href='",statNet$href[i],"' target='_blank'>",statNet$href[i],"</a></p>")
     if(colorNet$d[i]<0)
-    {
+    {if(abs(colorNet$d[i])<0.5){
+      colorNet$d[i]<-  -0.5
+      print(statNet$name[i])
+      print(colorNet$d[i])
+      
+     }
       nodeVisData[i,8]<-colorNet$d[i] * -1 
       
     }
     else{
-      
+      if(abs(colorNet$d[i])<0.5){
+        colorNet$d[i]<- 0.5
+        print(statNet$name[i])
+       print(colorNet$d[i])
+      }
       nodeVisData[i,8]<-colorNet$d[i]
     }
     
   }
   
+  
+  print(nodeVisData["size"])
   
   nodeVisData<-data.frame(nodeVisData[1:7], apply(nodeVisData["size"],2, normalize) )
   for( l in 1:length(nodeVisData$size)){

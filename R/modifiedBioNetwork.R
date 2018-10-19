@@ -210,7 +210,7 @@ modifiedBioNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDa
   nodeVisData$label<-sub(" *\\(.*", "", nodeVisData$label)
   
   normalize <- function(x) {
-    return (((x - min(x)) / (max(x) - min(x)))*50)
+    return (((x*2 - min(x)) / (max(x) - min(x)))*50)
   }
   
 

@@ -274,7 +274,7 @@ topHundredNetwork<-function(File=NULL,phy=FALSE,layOut=1,package=FALSE,nodeGoDat
   nodeVisData$label<-sub(" *\\(.*", "", nodeVisData$label)
 
   normalize <- function(x) {
-    return (((x - min(x)) / (max(x) - min(x)))*50)
+    return (((x*2 - min(x)) / (max(x) - min(x)))*50)
   }
   
   

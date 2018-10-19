@@ -29,10 +29,14 @@ edgeGO<<-NULL #visobject edge with GO terms in it
 
 #load(url("http://www.ilincs.org/tmp/signeta/weightedGraphStringPPI_10.rda")) #STRING PPI network
 #load(url("http://www.ilincs.org/tmp/signeta/stringToEntrezDetailed.Rdata")) #edge data
-# load( url("http://www.ilincs.org/tmp/signeta/lincscp_1.rda"))
+
+#For local use
+#load( url("http://www.ilincs.org/tmp/signeta/lincscp_1.rda"))
 # load("/Users/Rashid/Desktop/Rpackages/SigNetA_Data/weightedGraphStringPPI_10.rda")#new STRING PPI network
 # load("/Users/Rashid/Desktop/Rpackages/SigNetA_Data/interactome.rda")
 # load("/Users/Rashid/Desktop/Rpackages/SigNetA_Data/geneData.rda")
+
+#For server use#
 
 load("/tmp/datasets/weightedGraphStringPPI_10.rda") #STRING PPI network
 #load("/tmp/datasets/stringToEntrezDetailed.rda") #edge data
